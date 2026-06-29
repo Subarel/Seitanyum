@@ -2,7 +2,7 @@
   {
     "num": "SY1493",
     "name": "Subarel",
-    "status": "pending",
+    "status": "paid",
     "items": [
       {
         "id": 5,
@@ -16,6 +16,6 @@
     "total": 2200,
     "ts": 1782756477447,
     "createdAt": "2026-06-29T18:07:57.447Z",
-    "updatedAt": null
+    "updatedAt": "2026-06-29T18:08:00.432Z"
   }
 ]
