@@ -1,21 +1,21 @@
 [
   {
-    "num": "SY1493",
+    "num": "SY9548",
     "name": "Subarel",
-    "status": "paid",
+    "status": "pending",
     "items": [
       {
-        "id": 5,
-        "name": "Spicy Skewers",
-        "emoji": "🍢",
+        "id": 3,
+        "name": "Protein Bowl",
+        "emoji": "🍱",
         "qty": 1,
-        "price": 2200,
-        "unit": "4 skewers"
+        "price": 3200,
+        "unit": "per bowl"
       }
     ],
-    "total": 2200,
-    "ts": 1782756477447,
-    "createdAt": "2026-06-29T18:07:57.447Z",
-    "updatedAt": "2026-06-29T18:08:00.432Z"
+    "total": 3200,
+    "ts": 1782756590320,
+    "createdAt": "2026-06-29T18:09:50.320Z",
+    "updatedAt": null
   }
 ]
