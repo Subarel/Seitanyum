@@ -1,1 +1,9 @@
-{"bank":{"name":"First Bank Nigeria","acct":"3145678902","acctName":"SeitanYum Ltd"},"storeName":"SeitanYum","adminPass":"sy2025"}
+{
+  "bank": {
+    "name": "OPAY",
+    "acct": "8106034266",
+    "acctName": "Juliet S.O"
+  },
+  "storeName": "SeitanYum",
+  "adminPass": "sy2025"
+}
