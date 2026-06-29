@@ -1,21 +1,21 @@
 [
   {
-    "num": "SY5244",
+    "num": "SY1493",
     "name": "Subarel",
-    "status": "paid",
+    "status": "pending",
     "items": [
       {
-        "id": 2,
-        "name": "Seitan Wrap",
-        "emoji": "🌯",
+        "id": 5,
+        "name": "Spicy Skewers",
+        "emoji": "🍢",
         "qty": 1,
-        "price": 1800,
-        "unit": "each"
+        "price": 2200,
+        "unit": "4 skewers"
       }
     ],
-    "total": 1800,
-    "ts": 1782756435800,
-    "createdAt": "2026-06-29T18:07:15.800Z",
-    "updatedAt": "2026-06-29T18:07:24.561Z"
+    "total": 2200,
+    "ts": 1782756477447,
+    "createdAt": "2026-06-29T18:07:57.447Z",
+    "updatedAt": null
   }
 ]
