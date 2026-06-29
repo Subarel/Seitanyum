@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1E3A0F">
+<title>SeitanYum Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="../assets/db.js"></script>
+<style>
+:root{--F:#1E3A0F;--S:#4A7A28;--L:#8DC63F;--A:#E8A020;--C:#FAF6EF;--W:#F4EFE4;--P:#EDE7D9;--BD:#D9D0C0;--M:#6B6355;--D:#1A1714;--WH:#FFFDF9;--R:#DC2626;--G:#16A34A;--sh:0 3px 12px rgba(30,58,15,.09);--SH:0 10px 36px rgba(30,58,15,.14);--r:12px;--rl:18px;--rx:24px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{background:var(--C);font-family:'Plus Jakarta Sans',sans-serif;color:var(--D);min-height:100vh;}
+.sb{height:3px;position:fixed;top:0;left:0;right:0;z-index:999;transition:width .4s,background .3s;width:0;}
+.sb.ld{width:70%;background:var(--A);}.sb.ok{width:100%;background:var(--L);}.sb.er{width:100%;background:var(--R);}
+/* LOCK */
+#lock{position:fixed;inset:0;z-index:999;background:linear-gradient(150deg,var(--F),var(--S));display:flex;align-items:center;justify-content:center;padding:20px;}
+.lcard{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:var(--rx);padding:40px 32px;width:min(380px,100%);text-align:center;backdrop-filter:blur(10px);}
+.llogo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:4px;}
+.llogo em{font-style:normal;color:var(--L);}
+.lsub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:28px;}
+.linp{width:100%;padding:13px 16px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--r);color:#fff;font-family:inherit;font-size:15px;outline:none;margin-bottom:10px;text-align:center;letter-spacing:3px;transition:border-color .2s;}
+.linp::placeholder{color:rgba(255,255,255,.3);letter-spacing:0;}
+.linp:focus{border-color:var(--L);}
+.lbtn{width:100%;background:var(--L);color:var(--F);border:none;border-radius:40px;padding:13px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;cursor:pointer;transition:opacity .18s;}
+.lbtn:hover{opacity:.88;}
+.lerr{color:#FCA5A5;font-size:12px;margin-top:9px;min-height:16px;}
+/* GITHUB SETUP (shown on first login) */
+.ghsetup{margin-top:20px;display:none;}
+.ghsetup.show{display:block;}
+.ghst{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--L);margin-bottom:10px;}
+.ghf{width:100%;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--r);color:#fff;font-family:inherit;font-size:13px;outline:none;margin-bottom:8px;transition:border-color .2s;}
+.ghf::placeholder{color:rgba(255,255,255,.35);}
+.ghf:focus{border-color:var(--L);}
+.ghnote{font-size:11px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:10px;line-height:1.5;}
+.ghskip{background:none;border:none;color:rgba(255,255,255,.45);font-size:12px;cursor:pointer;font-family:inherit;width:100%;text-align:center;padding:6px;margin-top:4px;}
+/* APP */
+#app{display:none;}
+/* TOPBAR */
+.topbar{background:var(--F);height:54px;display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:90;}
+.backbtn{background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:30px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:background .18s;white-space:nowrap;flex-shrink:0;}
+.backbtn:hover{background:rgba(255,255,255,.2);}
+.tblogo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;flex:1;text-align:center;}
+.tblogo em{font-style:normal;color:var(--L);}
+.tbright{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.syncdot{width:8px;height:8px;border-radius:50%;background:var(--L);flex-shrink:0;transition:background .3s;}
+.syncdot.busy{background:var(--A);animation:pulse .8s ease infinite alternate;}
+.syncdot.err{background:var(--R);}
+@keyframes pulse{from{opacity:.4}to{opacity:1}}
+.tbbadge{background:rgba(141,198,63,.2);color:var(--L);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.tbbtn{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:30px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .18s;white-space:nowrap;}
+.tbbtn:hover{background:rgba(255,255,255,.18);}
+/* STATS */
+.statsbar{background:var(--WH);border-bottom:1.5px solid var(--BD);display:grid;grid-template-columns:repeat(5,1fr);overflow-x:auto;}
+.sc{padding:14px 10px;border-right:1.5px solid var(--BD);text-align:center;min-width:70px;}
+.sc:last-child{border-right:none;}
+.scn{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--F);line-height:1;}
+.scn.grn{color:var(--G);}.scn.amb{color:var(--A);}.scn.red{color:var(--R);}
+.scl{font-size:9px;color:var(--M);margin-top:2px;text-transform:uppercase;letter-spacing:.8px;}
+/* ADMIN TABS */
+.atabs{display:flex;background:var(--WH);border-bottom:1.5px solid var(--BD);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.atab{padding:12px 18px;font-size:13px;font-weight:700;color:var(--M);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .18s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;flex-shrink:0;}
+.atab:hover{color:var(--F);}
+.atab.on{color:var(--F);border-bottom-color:var(--L);}
+/* PAGES */
+.page{display:none;}.page.on{display:block;}
+/* ORDER FILTERS */
+.ofilters{display:flex;gap:6px;padding:14px 0 10px;flex-wrap:wrap;}
+.otab{padding:7px 14px;border-radius:30px;font-size:12px;font-weight:700;color:var(--M);background:var(--WH);border:1.5px solid var(--BD);cursor:pointer;font-family:inherit;transition:all .18s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.otab:hover{border-color:var(--L);color:var(--F);}
+.otab.on{background:var(--F);color:#fff;border-color:var(--F);}
+.otcnt{background:var(--P);border-radius:20px;padding:0 6px;font-size:10px;font-weight:800;color:var(--M);}
+.otab.on .otcnt{background:var(--L);color:var(--F);}
+/* ORDER CARDS */
+.olist{display:flex;flex-direction:column;gap:12px;}
+.ocard{background:var(--WH);border:1.5px solid var(--BD);border-radius:var(--rl);overflow:hidden;transition:all .2s;}
+.ocard.s-paid{border-color:var(--A);box-shadow:0 0 0 3px rgba(232,160,32,.07);}
+.ocard.s-accepted{border-color:var(--S);}
+.ocard.s-ready{border-color:var(--L);box-shadow:0 0 0 3px rgba(141,198,63,.07);}
+.ocard.s-cancelled{opacity:.55;}
+.ocardtop{padding:13px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;flex-wrap:wrap;}
+.onum{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;background:var(--F);color:var(--L);padding:5px 12px;border-radius:8px;letter-spacing:2px;flex-shrink:0;}
+.ocust{font-size:14px;font-weight:700;flex:1;min-width:60px;}
+.otime{font-size:11px;color:var(--M);white-space:nowrap;}
+.schip{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;flex-shrink:0;}
+.cp{background:#FEF3C7;color:#92400E;}.ca{background:#FDE68A;color:#B45309;}
+.cc{background:#D1FAE5;color:#065F46;}.cr{background:var(--L);color:var(--F);}
+.cx{background:#FEE2E2;color:#991B1B;}
+.oarrow{font-size:13px;color:var(--M);transition:transform .2s;flex-shrink:0;margin-left:auto;}
+.ocard.exp .oarrow{transform:rotate(180deg);}
+.ocardbody{display:none;padding:13px 16px;border-top:1.5px solid var(--BD);}
+.ocard.exp .ocardbody{display:block;}
+.oitems{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px;}
+.ochip{background:var(--W);border-radius:20px;padding:4px 12px;font-size:12px;}
+.ototrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
+.otlbl{font-size:12px;color:var(--M);}
+.otval{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--F);}
+.oactions{display:flex;gap:8px;flex-wrap:wrap;}
+.abtn{border:none;border-radius:30px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px;transition:all .18s;white-space:nowrap;}
+.abtn:hover{opacity:.85;}
+.ab-acc{background:var(--S);color:#fff;}
+.ab-rdy{background:var(--L);color:var(--F);}
+.ab-can{background:var(--W);color:var(--M);border:1.5px solid var(--BD);}
+.ab-can:hover{border-color:var(--R);color:var(--R);}
+.ab-del{background:#FEE2E2;color:var(--R);}
+.empty-o{text-align:center;padding:60px 20px;color:var(--M);}
+.empty-o .ei{font-size:52px;margin-bottom:14px;}
+.empty-o h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--F);margin-bottom:5px;}
+.lastref{font-size:11px;color:var(--M);text-align:right;padding:2px 0 8px;}
+/* PRODUCTS */
+.prodhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.prodhdtitle{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--F);}
+.addprodbtn{background:var(--L);color:var(--F);border:none;border-radius:30px;padding:10px 20px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.prodgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.prodcard{background:var(--WH);border:1.5px solid var(--BD);border-radius:var(--rl);overflow:hidden;}
+.prodthumb{height:120px;background:linear-gradient(135deg,var(--S),var(--F));display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden;}
+.prodthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.prodinfo{padding:13px;}
+.prodname{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:2px;}
+.prodprice{font-size:12px;font-weight:600;color:var(--S);margin-bottom:9px;}
+.prodbtns{display:flex;gap:6px;}
+.pbtn{flex:1;border:none;border-radius:20px;padding:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;}
+.pb-ed{background:var(--F);color:#fff;}.pb-ed:hover{background:var(--S);}
+.pb-im{background:var(--W);color:var(--M);border:1.5px solid var(--BD);}.pb-im:hover{border-color:var(--L);color:var(--F);}
+.pb-dl{background:#FEE2E2;color:var(--R);}
+/* ANALYTICS */
+.angrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:16px;}
+.ancard{background:var(--WH);border:1.5px solid var(--BD);border-radius:var(--rl);padding:16px;text-align:center;}
+.ann{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--F);line-height:1;}
+.anl{font-size:10px;color:var(--M);margin-top:3px;text-transform:uppercase;letter-spacing:1px;}
+.topitems{background:var(--WH);border:1.5px solid var(--BD);border-radius:var(--rl);overflow:hidden;}
+.tihd{background:var(--F);padding:12px 16px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--L);}
+.tirow{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--BD);}
+.tirow:last-child{border-bottom:none;}
+.tie{font-size:20px;flex-shrink:0;}
+.tin{flex:0 0 110px;font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tibw{flex:1;background:var(--W);border-radius:20px;height:16px;overflow:hidden;}
+.tib{height:100%;background:linear-gradient(90deg,var(--S),var(--L));border-radius:20px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:9px;font-weight:700;color:var(--F);}
+.tic{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--F);width:28px;text-align:right;flex-shrink:0;}
+/* SETTINGS */
+.settlist{display:flex;flex-direction:column;gap:14px;}
+.settcard{background:var(--WH);border:1.5px solid var(--BD);border-radius:var(--rl);padding:20px;}
+.setttitle{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--F);margin-bottom:4px;}
+.settdesc{font-size:12px;color:var(--M);margin-bottom:14px;line-height:1.5;}
+.sf{width:100%;padding:10px 14px;border:1.5px solid var(--BD);border-radius:var(--r);font-family:inherit;font-size:13px;color:var(--D);background:var(--C);outline:none;margin-bottom:9px;transition:border-color .18s;}
+.sf:focus{border-color:var(--L);background:var(--WH);}
+.sflbl{font-size:10px;font-weight:700;color:var(--M);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;display:block;}
+.sbtnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.sbtn{background:var(--F);color:#fff;border:none;border-radius:30px;padding:10px 18px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;transition:background .18s;display:inline-flex;align-items:center;gap:5px;}
+.sbtn:hover{background:var(--S);}
+.sbtn.amb{background:var(--A);color:var(--D);}
+.sbtn.danger{background:#FEE2E2;color:var(--R);}
+.sbtn.danger:hover{background:#FECACA;}
+.ghstatus{padding:9px 14px;border-radius:var(--r);font-size:12px;font-weight:600;margin-bottom:12px;}
+.ghstatus.conn{background:#D1FAE5;color:#065F46;}
+.ghstatus.disc{background:#FEE2E2;color:#991B1B;}
+.drstatus{padding:9px 14px;border-radius:var(--r);font-size:12px;font-weight:600;margin-bottom:12px;}
+.drstatus.conn{background:#DBEAFE;color:#1D4ED8;}
+.drstatus.disc{background:var(--P);color:var(--M);}
+/* BELL TOAST */
+.belltst{position:fixed;bottom:76px;right:14px;background:var(--F);color:#fff;border-radius:var(--rl);padding:13px 17px;box-shadow:var(--SH);display:flex;align-items:flex-start;gap:12px;max-width:min(310px,calc(100vw - 28px));z-index:500;transform:translateY(80px);opacity:0;transition:all .32s cubic-bezier(.22,.68,0,1.2);}
+.belltst.show{transform:translateY(0);opacity:1;}
+.bticon{font-size:24px;flex-shrink:0;}
+.btbody{}
+.bttitle{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--L);margin-bottom:2px;}
+.btmsg{font-size:11px;color:rgba(255,255,255,.7);line-height:1.4;}
+.btclose{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:16px;margin-left:auto;align-self:flex-start;flex-shrink:0;}
+/* CONFIRM MODAL */
+.cfbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(3px);}
+.cfbg.open{opacity:1;pointer-events:all;}
+.cfbox{background:var(--WH);border-radius:var(--rx);padding:26px 22px;max-width:340px;width:100%;box-shadow:var(--SH);transform:scale(.9);transition:transform .24s cubic-bezier(.22,.68,0,1.2);text-align:center;}
+.cfbg.open .cfbox{transform:scale(1);}
+.cficon{font-size:44px;margin-bottom:10px;}
+.cftitle{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--F);margin-bottom:5px;}
+.cfmsg{font-size:12px;color:var(--M);margin-bottom:20px;line-height:1.5;}
+.cfbtns{display:flex;gap:10px;}
+.cfyes{flex:1;background:var(--L);color:var(--F);border:none;border-radius:30px;padding:12px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;}
+.cfyes.danger{background:var(--R);color:#fff;}
+.cfno{flex:1;background:var(--W);color:var(--M);border:1.5px solid var(--BD);border-radius:30px;padding:11px;font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;}
+/* PRODUCT MODAL */
+.pmbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(3px);overflow-y:auto;}
+.pmbg.open{opacity:1;pointer-events:all;}
+.pmbox{background:var(--WH);border-radius:var(--rx);padding:24px 22px;max-width:460px;width:100%;box-shadow:var(--SH);transform:scale(.92);transition:transform .26s cubic-bezier(.22,.68,0,1.2);}
+.pmbg.open .pmbox{transform:scale(1);}
+.pmtitle{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--F);margin-bottom:14px;}
+.pmf{width:100%;padding:10px 14px;border:1.5px solid var(--BD);border-radius:var(--r);font-family:inherit;font-size:13px;color:var(--D);background:var(--C);outline:none;margin-bottom:9px;transition:border-color .18s;}
+.pmf:focus{border-color:var(--L);background:var(--WH);}
+.pmfl{font-size:10px;font-weight:700;color:var(--M);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;display:block;}
+.pmfrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.pmbtns{display:flex;gap:10px;margin-top:6px;}
+.pmsave{flex:1;background:var(--F);color:#fff;border:none;border-radius:30px;padding:12px;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;cursor:pointer;}
+.pmsave:hover{background:var(--S);}
+.pmcancel{flex:1;background:var(--W);color:var(--M);border:1.5px solid var(--BD);border-radius:30px;padding:11px;font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;}
+/* ADMIN MAIN */
+.amain{padding:16px 16px 80px;max-width:960px;margin:0 auto;}
+/* RESPONSIVE */
+@media(max-width:600px){.statsbar{grid-template-columns:repeat(3,1fr);}.sc:nth-child(n+4){border-top:1.5px solid var(--BD);}.prodgrid{grid-template-columns:1fr 1fr;}.angrid{grid-template-columns:1fr 1fr;}.tblogo{font-size:14px;}.tbbadge{display:none;}}
+@media(max-width:380px){.statsbar{grid-template-columns:repeat(2,1fr);}.prodgrid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="sb" id="sb"></div>
+<!-- LOCK -->
+<div id="lock">
+  <div class="lcard">
+    <div class="llogo">Seitan<em>Yum</em></div>
+    <div class="lsub">Admin access only</div>
+    <input class="linp" id="lockInput" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    <button class="lbtn" onclick="unlock()">Enter Dashboard →</button>
+    <div class="lerr" id="lockErr"></div>
+    <!-- GitHub setup — shown on first login if not yet configured -->
+    <div class="ghsetup" id="ghSetup">
+      <div class="ghst">⚡ Connect GitHub (one-time setup)</div>
+      <div class="ghnote">This syncs all orders and products live across every device. Customers never need to enter this — just you, once.</div>
+      <input class="ghf" id="ghToken" type="password" placeholder="GitHub Personal Access Token (repo scope)"/>
+      <input class="ghf" id="ghOwner" placeholder="GitHub username"/>
+      <input class="ghf" id="ghRepo" placeholder="Repository name"/>
+      <input class="ghf" id="ghBranch" placeholder="Branch (default: main)" value="main"/>
+      <button class="lbtn" onclick="saveGHConfig()" style="margin-bottom:8px">Connect & Enter →</button>
+      <button class="ghskip" onclick="skipGH()">Skip — use local storage for now</button>
+    </div>
+  </div>
+</div>
+<!-- APP -->
+<div id="app">
+  <header class="topbar">
+    <button class="backbtn" onclick="location.href='../store/index.html'">← Store</button>
+    <div class="tblogo">Seitan<em>Yum</em> Admin</div>
+    <div class="tbright">
+      <div class="syncdot" id="syncdot" title="Sync status"></div>
+      <div class="tbbadge">🔐 Admin</div>
+      <button class="tbbtn" onclick="loadAll()">⟳</button>
+      <button class="tbbtn" onclick="logout()">Exit</button>
+    </div>
+  </header>
+  <div class="statsbar">
+    <div class="sc"><div class="scn" id="stTotal">0</div><div class="scl">Total</div></div>
+    <div class="sc"><div class="scn amb" id="stPaid">0</div><div class="scl">Paid</div></div>
+    <div class="sc"><div class="scn" id="stPrep">0</div><div class="scl">Preparing</div></div>
+    <div class="sc"><div class="scn grn" id="stReady">0</div><div class="scl">Ready</div></div>
+    <div class="sc"><div class="scn grn" id="stRev">₦0</div><div class="scl">Revenue</div></div>
+  </div>
+  <div class="atabs">
+    <button class="atab on" onclick="showPage('orders',this)">📋 Orders</button>
+    <button class="atab" onclick="showPage('products',this)">🍽️ Products</button>
+    <button class="atab" onclick="showPage('analytics',this)">📊 Analytics</button>
+    <button class="atab" onclick="showPage('settings',this)">⚙️ Settings</button>
+  </div>
+  <!-- ORDERS PAGE -->
+  <div class="page on" id="page-orders">
+    <div class="amain">
+      <div class="ofilters">
+        <button class="otab on" onclick="setOTab('all',this)">All <span class="otcnt" id="tc-all">0</span></button>
+        <button class="otab" onclick="setOTab('paid',this)">🔔 Paid <span class="otcnt" id="tc-paid">0</span></button>
+        <button class="otab" onclick="setOTab('accepted',this)">⏳ Prep <span class="otcnt" id="tc-accepted">0</span></button>
+        <button class="otab" onclick="setOTab('ready',this)">✅ Ready <span class="otcnt" id="tc-ready">0</span></button>
+        <button class="otab" onclick="setOTab('pending',this)">⏸ Pending <span class="otcnt" id="tc-pending">0</span></button>
+      </div>
+      <div class="lastref" id="lastRef">—</div>
+      <div class="olist" id="ordersList"></div>
+    </div>
+  </div>
+  <!-- PRODUCTS PAGE -->
+  <div class="page" id="page-products">
+    <div class="amain">
+      <div class="prodhd">
+        <div class="prodhdtitle">🍽️ Menu Products</div>
+        <button class="addprodbtn" onclick="openAddProd()">+ Add Product</button>
+      </div>
+      <div class="prodgrid" id="prodGrid"></div>
+    </div>
+  </div>
+  <!-- ANALYTICS PAGE -->
+  <div class="page" id="page-analytics">
+    <div class="amain">
+      <div class="angrid" id="anGrid"></div>
+      <div class="topitems"><div class="tihd">🏆 Most Ordered Items</div><div id="topItems"></div></div>
+    </div>
+  </div>
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div class="amain">
+      <div class="settlist">
+        <!-- GitHub -->
+        <div class="settcard">
+          <div class="setttitle">🐙 GitHub Sync</div>
+          <div class="settdesc">Connect your repo so orders and menu sync live across all devices. Every change is a git commit — permanent history.</div>
+          <div id="ghStatus" class="ghstatus disc">Not connected — using local storage only</div>
+          <label class="sflbl">Personal Access Token (classic, repo scope)</label>
+          <input class="sf" id="sToken" type="password" placeholder="ghp_xxxxxxxxxxxx"/>
+          <label class="sflbl">GitHub Username</label>
+          <input class="sf" id="sOwner" placeholder="your-username"/>
+          <label class="sflbl">Repository Name</label>
+          <input class="sf" id="sRepo" placeholder="seitanyum"/>
+          <label class="sflbl">Branch</label>
+          <input class="sf" id="sBranch" placeholder="main" value="main"/>
+          <div class="sbtnrow">
+            <button class="sbtn amb" onclick="testAndSaveGH()">🔌 Test & Connect</button>
+            <button class="sbtn" onclick="initRepo()">🚀 Init Repo Files</button>
+            <button class="sbtn danger" onclick="disconnectGH()">Disconnect</button>
+          </div>
+        </div>
+        <!-- Google Drive -->
+        <div class="settcard">
+          <div class="setttitle">📁 Google Drive (Product Images)</div>
+          <div class="settdesc">Store product photos on Google Drive so they appear for all customers on any device. Create a project at console.cloud.google.com, enable Drive API, create OAuth 2.0 credentials.</div>
+          <div id="drStatus" class="drstatus disc">Not configured — images saved locally per device</div>
+          <label class="sflbl">Google OAuth Client ID</label>
+          <input class="sf" id="sDriveClientId" placeholder="xxxx.apps.googleusercontent.com"/>
+          <div class="sbtnrow">
+            <button class="sbtn" onclick="saveDriveConfig()">💾 Save Drive Config</button>
+            <button class="sbtn danger" onclick="clearDriveConfig()">Remove</button>
+          </div>
+        </div>
+        <!-- Bank -->
+        <div class="settcard">
+          <div class="setttitle">🏦 Payment Details</div>
+          <div class="settdesc">Shown to customers when they place orders.</div>
+          <label class="sflbl">Bank Name</label>
+          <input class="sf" id="sBankName" placeholder="e.g. First Bank Nigeria"/>
+          <label class="sflbl">Account Number</label>
+          <input class="sf" id="sBankAcct" placeholder="e.g. 3145678902"/>
+          <label class="sflbl">Account Name</label>
+          <input class="sf" id="sBankAcctName" placeholder="e.g. SeitanYum Ltd"/>
+          <button class="sbtn" onclick="savePayment()">Save Payment Details</button>
+        </div>
+        <!-- Password -->
+        <div class="settcard">
+          <div class="setttitle">🔐 Change Password</div>
+          <div class="settdesc">Updates the admin login and storefront owner edit mode password.</div>
+          <label class="sflbl">New Password (min 6 chars)</label>
+          <input class="sf" id="sNewPass" type="password" placeholder="New password"/>
+          <label class="sflbl">Confirm Password</label>
+          <input class="sf" id="sConfPass" type="password" placeholder="Confirm"/>
+          <button class="sbtn" onclick="changePass()">Update Password</button>
+        </div>
+        <!-- Data -->
+        <div class="settcard">
+          <div class="setttitle">🗑 Data Management</div>
+          <div class="settdesc">Manage local cached data. GitHub data is unaffected.</div>
+          <div class="sbtnrow">
+            <button class="sbtn danger" onclick="confirmClearOrders()">Clear Local Orders</button>
+            <button class="sbtn danger" onclick="confirmClearAll()">Clear All Local Data</button>
+          </div>
+        </div>
+        <!-- Links -->
+        <div class="settcard">
+          <div class="setttitle">🔗 Navigation</div>
+          <div class="sbtnrow">
+            <button class="sbtn" onclick="location.href='../store/index.html'">← Store</button>
+            <button class="sbtn" onclick="location.href='../index.html'">🏠 Hub</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- BELL TOAST -->
+<div class="belltst" id="bellToast">
+  <div class="bticon">🔔</div>
+  <div class="btbody"><div class="bttitle" id="btTitle">New Order!</div><div class="btmsg" id="btMsg">Customer confirmed payment.</div></div>
+  <button class="btclose" onclick="closeBell()">✕</button>
+</div>
+<!-- CONFIRM -->
+<div class="cfbg" id="cfBg">
+  <div class="cfbox">
+    <div class="cficon" id="cfIcon">⚠️</div>
+    <div class="cftitle" id="cfTitle">Are you sure?</div>
+    <div class="cfmsg" id="cfMsg">This cannot be undone.</div>
+    <div class="cfbtns">
+      <button class="cfno" onclick="closeConfirm()">Cancel</button>
+      <button class="cfyes" id="cfYes" onclick="doConfirm()">Confirm</button>
+    </div>
+  </div>
+</div>
+<!-- PRODUCT MODAL -->
+<div class="pmbg" id="pmBg">
+  <div class="pmbox">
+    <div class="pmtitle" id="pmTitle">Add Product</div>
+    <label class="pmfl">Product Name</label>
+    <input class="pmf" id="pName" placeholder="e.g. Classic Seitan Strips"/>
+    <label class="pmfl">Description</label>
+    <textarea class="pmf" id="pDesc" rows="3" placeholder="Short description…" style="resize:vertical"></textarea>
+    <div class="pmfrow">
+      <div><label class="pmfl">Price (₦)</label><input class="pmf" id="pPrice" type="number" placeholder="2800" min="0"/></div>
+      <div><label class="pmfl">Unit</label><input class="pmf" id="pUnit" placeholder="per pack"/></div>
+    </div>
+    <div class="pmfrow">
+      <div>
+        <label class="pmfl">Category</label>
+        <select class="pmf" id="pCat" style="cursor:pointer">
+          <option value="ready">Ready to Eat</option>
+          <option value="high-protein">High Protein</option>
+          <option value="family">Family Size</option>
+          <option value="grilled">Grilled</option>
+        </select>
+      </div>
+      <div><label class="pmfl">Tag</label><input class="pmf" id="pTag" placeholder="e.g. New"/></div>
+    </div>
+    <label class="pmfl">Emoji Icon</label>
+    <input class="pmf" id="pEmoji" placeholder="🍗" style="font-size:20px;text-align:center"/>
+    <div class="pmbtns">
+      <button class="pmcancel" onclick="closePM()">Cancel</button>
+      <button class="pmsave" onclick="savePM()">Save Product</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="adminFileInput" accept="image/jpeg,image/png,image/webp" style="display:none"/>
+<script>
+'use strict';
+let ADMIN_PASS = localStorage.getItem('sy_admin_pass') || 'sy2025';
+let allOrders=[], activeOTab='all', prevPaid=0, pendingAction=null, editingProdId=null;
+let bellTimer, refreshTimer;
+
+function setSB(s){const b=document.getElementById('sb');b.className='sb '+s;const d=document.getElementById('syncdot');d.className='syncdot'+(s==='ld'?' busy':s==='er'?' err':'');if(s==='ok'||s==='er')setTimeout(()=>{b.className='sb';},1200);}
+// AUTH
+function unlock(){
+  ADMIN_PASS=localStorage.getItem('sy_admin_pass')||'sy2025';
+  const v=document.getElementById('lockInput').value;
+  if(v===ADMIN_PASS){
+    if(!SY.isConfigured()){document.getElementById('ghSetup').classList.add('show');return;}
+    enterApp();
+  }else{
+    const e=document.getElementById('lockErr');e.textContent='❌ Wrong password';
+    document.getElementById('lockInput').value='';
+    setTimeout(()=>e.textContent='',3000);
+  }
+}
+document.getElementById('lockInput').addEventListener('keydown',e=>{if(e.key==='Enter')unlock();});
+function saveGHConfig(){
+  const t=document.getElementById('ghToken').value.trim();
+  const o=document.getElementById('ghOwner').value.trim();
+  const r=document.getElementById('ghRepo').value.trim();
+  const b=document.getElementById('ghBranch').value.trim()||'main';
+  if(!t||!o||!r){showBell('⚠️ Missing fields','Fill in all GitHub fields.');return;}
+  SY.saveConfig(t,o,r,b);
+  enterApp();
+}
+function skipGH(){enterApp();}
+function enterApp(){
+  document.getElementById('lock').style.display='none';
+  document.getElementById('app').style.display='block';
+  loadAll();
+  refreshTimer=setInterval(loadAll,8000);
+  loadSettings();
+}
+function logout(){
+  clearInterval(refreshTimer);
+  document.getElementById('app').style.display='none';
+  document.getElementById('lock').style.display='flex';
+  document.getElementById('lockInput').value='';
+  document.getElementById('ghSetup').classList.remove('show');
+}
+// PAGES
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.atab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('page-'+name).classList.add('on');
+  btn.classList.add('on');
+  if(name==='products')renderProds();
+  if(name==='analytics')renderAnalytics();
+  if(name==='settings')loadSettings();
+}
+// ORDERS
+const getOrders=()=>{try{return JSON.parse(localStorage.getItem('sy_orders')||'[]');}catch{return[];}};
+async function loadAll(){
+  setSB('ld');
+  try{
+    allOrders=(await SY.getOrders()).sort((a,b)=>b.ts-a.ts);
+    setSB('ok');
+  }catch(e){
+    setSB('er');
+    allOrders=getOrders().sort((a,b)=>b.ts-a.ts);
+    showBell('⚠️ Offline','Showing cached data.');
+  }
+  updateStats();updateOTabs();renderOrders();checkBell();
+  document.getElementById('lastRef').textContent='Updated: '+new Date().toLocaleTimeString();
+}
+function updateStats(){
+  const paid=allOrders.filter(o=>o.status==='paid').length;
+  const prep=allOrders.filter(o=>o.status==='accepted').length;
+  const ready=allOrders.filter(o=>o.status==='ready').length;
+  const rev=allOrders.filter(o=>!['cancelled','pending'].includes(o.status)).reduce((s,o)=>s+o.total,0);
+  document.getElementById('stTotal').textContent=allOrders.length;
+  document.getElementById('stPaid').textContent=paid;
+  document.getElementById('stPrep').textContent=prep;
+  document.getElementById('stReady').textContent=ready;
+  document.getElementById('stRev').textContent='₦'+rev.toLocaleString();
+}
+function updateOTabs(){
+  const c={all:allOrders.length,paid:0,accepted:0,ready:0,pending:0};
+  allOrders.forEach(o=>{if(c[o.status]!==undefined)c[o.status]++;});
+  Object.keys(c).forEach(k=>{const el=document.getElementById('tc-'+k);if(el)el.textContent=c[k];});
+}
+function setOTab(tab,btn){activeOTab=tab;document.querySelectorAll('.otab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');renderOrders();}
+function renderOrders(){
+  const list=document.getElementById('ordersList');
+  const filtered=activeOTab==='all'?allOrders:allOrders.filter(o=>o.status===activeOTab);
+  if(!filtered.length){list.innerHTML=`<div class="empty-o"><div class="ei">🌿</div><h3>No orders here</h3><p>Orders appear as customers place them.</p></div>`;return;}
+  const SL={pending:'⏸ Pending',paid:'💰 Paid',accepted:'⏳ Preparing',ready:'✅ Ready',cancelled:'✕ Cancelled'};
+  const SC={pending:'cp',paid:'ca',accepted:'cc',ready:'cr',cancelled:'cx'};
+  list.innerHTML=filtered.map(o=>`
+    <div class="ocard s-${o.status}" id="oc-${o.num}">
+      <div class="ocardtop" onclick="toggleOrder('${o.num}')">
+        <div class="onum">${SY.esc(o.num)}</div>
+        <div class="ocust">👤 ${SY.esc(o.name)}</div>
+        <div class="otime">${fmtTime(o.ts)}</div>
+        <div class="schip ${SC[o.status]||''}">${SL[o.status]||o.status}</div>
+        <div class="oarrow">▾</div>
+      </div>
+      <div class="ocardbody">
+        <div class="oitems">${o.items.map(i=>`<span class="ochip">${SY.esc(i.emoji)} ${SY.esc(i.name)} ×${i.qty}</span>`).join('')}</div>
+        <div class="ototrow"><div class="otlbl">Total</div><div class="otval">₦${o.total.toLocaleString()}</div></div>
+        <div class="oactions">${buildActions(o)}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleOrder(num){document.getElementById('oc-'+num)?.classList.toggle('exp');}
+function buildActions(o){
+  let h='';
+  if(o.status==='paid')h+=`<button class="abtn ab-acc" onclick="doOrder('${o.num}','accepted')">✅ Accept</button>`;
+  if(o.status==='accepted')h+=`<button class="abtn ab-rdy" onclick="doOrder('${o.num}','ready')">🎉 Mark Ready</button>`;
+  if(!['ready','cancelled'].includes(o.status))h+=`<button class="abtn ab-can" onclick="askCancel('${o.num}')">✕ Cancel</button>`;
+  if(o.status==='cancelled')h+=`<button class="abtn ab-del" onclick="askDelete('${o.num}')">🗑 Delete</button>`;
+  return h;
+}
+async function doOrder(num,newStatus){
+  setSB('ld');
+  try{await SY.updateStatus(num,newStatus);setSB('ok');}catch(e){setSB('er');}
+  await loadAll();
+  if(newStatus==='ready')showBell('🎉 Order Ready!',`Order ${num} marked ready — customer is being notified on their screen.`);
+  if(newStatus==='accepted')showBell('✅ Accepted',`Order ${num} is now being prepared.`);
+}
+function askCancel(num){pendingAction=()=>doOrder(num,'cancelled');openConfirm('⚠️','Cancel Order?',`Order ${num} will be cancelled.`,'Cancel',false);}
+function askDelete(num){pendingAction=async()=>{setSB('ld');try{await SY.deleteOrder(num);setSB('ok');}catch(e){setSB('er');}await loadAll();};openConfirm('🗑️','Delete Order?',`Order ${num} will be permanently deleted.`,'Delete',true);}
+// BELL
+function checkBell(){
+  const paid=allOrders.filter(o=>o.status==='paid').length;
+  if(paid>prevPaid){const n=allOrders.filter(o=>o.status==='paid').sort((a,b)=>b.ts-a.ts)[0];if(n)showBell('🔔 Bell Rung!',`${SY.esc(n.name)} confirmed payment for ${n.num}`);}
+  prevPaid=paid;
+}
+function showBell(title,msg){document.getElementById('btTitle').textContent=title;document.getElementById('btMsg').textContent=msg;const t=document.getElementById('bellToast');t.classList.add('show');clearTimeout(bellTimer);bellTimer=setTimeout(()=>t.classList.remove('show'),8000);}
+function closeBell(){document.getElementById('bellToast').classList.remove('show');}
+// PRODUCTS
+async function renderProds(){
+  setSB('ld');
+  const prods=await SY.getProducts().catch(()=>SY.DP);
+  setSB('ok');
+  const grid=document.getElementById('prodGrid');
+  const img=id=>localStorage.getItem('sy_img_'+id)||null;
+  grid.innerHTML=prods.map(p=>{
+    const i=p.driveId?SY.DRIVE.imgUrl(p.driveId):img(p.id);
+    return`<div class="prodcard">
+      <div class="prodthumb">${i?`<img src="${i}" alt="${SY.esc(p.name)}" loading="lazy"/>`:`<span>${SY.esc(p.emoji)}</span>`}</div>
+      <div class="prodinfo">
+        <div class="prodname">${SY.esc(p.name)}</div>
+        <div class="prodprice">₦${p.price.toLocaleString()} · ${SY.esc(p.unit)}</div>
+        <div class="prodbtns">
+          <button class="pbtn pb-ed" onclick="openEditProd(${p.id})">✏️ Edit</button>
+          <button class="pbtn pb-im" onclick="adminUploadImg(${p.id})">📷 ${i?'Replace':'Photo'}</button>
+          <button class="pbtn pb-dl" onclick="askDelProd(${p.id})">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function adminUploadImg(id){
+  const fi=document.getElementById('adminFileInput');fi.value='';fi.onchange=null;
+  fi.onchange=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    if(file.size>4*1024*1024){showBell('⚠️ Too large','Max 4MB per image');return;}
+    const settings=await SY.getSettings().catch(()=>({}));
+    if(settings.driveClientId){
+      showBell('📤 Uploading…','Saving to Google Drive…');
+      try{
+        const token=await SY.DRIVE.getAccessToken(settings.driveClientId);
+        const driveId=await SY.DRIVE.uploadImage(file,`sy_prod_${id}_${Date.now()}`,token);
+        const prods=await SY.getProducts();
+        const i=prods.findIndex(p=>p.id===id);
+        if(i!==-1){prods[i].driveId=driveId;await SY.saveProducts(prods);}
+        renderProds();showBell('✅ Image saved','Uploaded to Google Drive — visible to all customers.');
+      }catch(err){
+        showBell('⚠️ Drive failed','Saving locally instead.');
+        const r=new FileReader();r.onload=ev=>{localStorage.setItem('sy_img_'+id,ev.target.result);renderProds();};r.readAsDataURL(file);
+      }
+    }else{
+      const r=new FileReader();r.onload=ev=>{localStorage.setItem('sy_img_'+id,ev.target.result);renderProds();showBell('✅ Image saved','Saved locally on this device. Set up Google Drive to share across devices.');};r.readAsDataURL(file);
+    }
+  };
+  fi.click();
+}
+function openAddProd(){editingProdId=null;document.getElementById('pmTitle').textContent='Add Product';['pName','pDesc','pPrice','pUnit','pTag','pEmoji'].forEach(f=>document.getElementById(f).value='');document.getElementById('pCat').value='ready';document.getElementById('pmBg').classList.add('open');}
+async function openEditProd(id){
+  const prods=await SY.getProducts().catch(()=>SY.DP);
+  const p=prods.find(x=>x.id===id);if(!p)return;
+  editingProdId=id;document.getElementById('pmTitle').textContent='Edit Product';
+  document.getElementById('pName').value=p.name;document.getElementById('pDesc').value=p.desc;
+  document.getElementById('pPrice').value=p.price;document.getElementById('pUnit').value=p.unit;
+  document.getElementById('pCat').value=p.cat;document.getElementById('pTag').value=p.tag;
+  document.getElementById('pEmoji').value=p.emoji;
+  document.getElementById('pmBg').classList.add('open');
+}
+function closePM(){document.getElementById('pmBg').classList.remove('open');}
+async function savePM(){
+  const name=document.getElementById('pName').value.trim();
+  const price=parseInt(document.getElementById('pPrice').value)||0;
+  if(!name||!price){showBell('⚠️ Missing fields','Name and price are required.');return;}
+  setSB('ld');
+  try{
+    const prods=await SY.getProducts();
+    const np={id:editingProdId||(Math.max(0,...prods.map(p=>p.id))+1),name,price,
+      desc:document.getElementById('pDesc').value.trim()||name,
+      unit:document.getElementById('pUnit').value.trim()||'each',
+      cat:document.getElementById('pCat').value,
+      tag:document.getElementById('pTag').value.trim()||'New',
+      emoji:document.getElementById('pEmoji').value.trim()||'🍽️',
+      macros:['Plant-based'],driveId:null};
+    if(editingProdId){const i=prods.findIndex(p=>p.id===editingProdId);if(i!==-1)prods[i]={...prods[i],...np};}
+    else prods.push(np);
+    await SY.saveProducts(prods);setSB('ok');
+    showBell('✅ Saved',`${name} ${editingProdId?'updated':'added'} to menu.`);
+  }catch(e){setSB('er');showBell('⚠️ Error','Saved locally.');}
+  closePM();renderProds();
+}
+function askDelProd(id){pendingAction=async()=>{setSB('ld');try{const p=(await SY.getProducts()).filter(x=>x.id!==id);await SY.saveProducts(p);setSB('ok');}catch(e){setSB('er');}renderProds();};openConfirm('🗑️','Delete Product?','This removes the product from the menu.','Delete',true);}
+// ANALYTICS
+async function renderAnalytics(){
+  const orders=await SY.getOrders().catch(()=>allOrders);
+  const done=orders.filter(o=>!['cancelled','pending'].includes(o.status));
+  const rev=done.reduce((s,o)=>s+o.total,0);
+  const today=done.filter(o=>new Date(o.ts).toDateString()===new Date().toDateString());
+  const todayRev=today.reduce((s,o)=>s+o.total,0);
+  const avg=done.length?Math.round(rev/done.length):0;
+  document.getElementById('anGrid').innerHTML=`
+    <div class="ancard"><div class="ann">₦${rev.toLocaleString()}</div><div class="anl">Total Revenue</div></div>
+    <div class="ancard"><div class="ann">${done.length}</div><div class="anl">Completed</div></div>
+    <div class="ancard"><div class="ann">₦${todayRev.toLocaleString()}</div><div class="anl">Today Revenue</div></div>
+    <div class="ancard"><div class="ann">${today.length}</div><div class="anl">Today Orders</div></div>
+    <div class="ancard"><div class="ann">₦${avg.toLocaleString()}</div><div class="anl">Avg Order</div></div>
+    <div class="ancard"><div class="ann">${orders.filter(o=>o.status==='cancelled').length}</div><div class="anl">Cancelled</div></div>`;
+  const counts={};
+  done.forEach(o=>o.items.forEach(i=>{if(!counts[i.name])counts[i.name]={name:i.name,emoji:i.emoji,n:0};counts[i.name].n+=i.qty;}));
+  const sorted=Object.values(counts).sort((a,b)=>b.n-a.n);
+  const max=sorted[0]?.n||1;
+  document.getElementById('topItems').innerHTML=sorted.length?sorted.map(item=>`<div class="tirow"><div class="tie">${SY.esc(item.emoji)}</div><div class="tin">${SY.esc(item.name)}</div><div class="tibw"><div class="tib" style="width:${(item.n/max*100).toFixed(0)}%;min-width:${item.n?'18px':'0'}">${item.n}</div></div><div class="tic">${item.n}</div></div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--M)">No data yet</div>';
+}
+// SETTINGS
+async function loadSettings(){
+  const s=await SY.getSettings().catch(()=>({}));
+  const b=s.bank||{};
+  document.getElementById('sBankName').value=b.name||'First Bank Nigeria';
+  document.getElementById('sBankAcct').value=b.acct||'3145678902';
+  document.getElementById('sBankAcctName').value=b.acctName||'SeitanYum Ltd';
+  document.getElementById('sDriveClientId').value=s.driveClientId||'';
+  loadGHStatus();loadDriveStatus(s);
+}
+function loadGHStatus(){
+  const cfg=SY.getPublicConfig();
+  const el=document.getElementById('ghStatus');
+  if(SY.isConfigured()){
+    el.className='ghstatus conn';el.textContent=`✅ Connected: ${cfg.owner}/${cfg.repo} (${cfg.branch})`;
+    document.getElementById('sOwner').value=cfg.owner||'';
+    document.getElementById('sRepo').value=cfg.repo||'';
+    document.getElementById('sBranch').value=cfg.branch||'main';
+  }else{el.className='ghstatus disc';el.textContent='🔴 Not connected — using local storage only';}
+}
+function loadDriveStatus(s){
+  const el=document.getElementById('drStatus');
+  if(s&&s.driveClientId){el.className='drstatus conn';el.textContent='✅ Google Drive configured — product images shared across all devices';}
+  else{el.className='drstatus disc';el.textContent='⚪ Not configured — images saved locally per device';}
+}
+async function testAndSaveGH(){
+  const t=document.getElementById('sToken').value.trim();
+  const o=document.getElementById('sOwner').value.trim();
+  const r=document.getElementById('sRepo').value.trim();
+  const b=document.getElementById('sBranch').value.trim()||'main';
+  if(!t||!o||!r){showBell('⚠️ Missing fields','Fill in all GitHub fields.');return;}
+  SY.saveConfig(t,o,r,b);setSB('ld');
+  try{
+    const info=await SY.testConnection();setSB('ok');
+    showBell('✅ Connected!',`Linked to ${info.full_name}`);loadGHStatus();
+  }catch(e){setSB('er');SY.clearConfig();showBell('❌ Failed',e.message);loadGHStatus();}
+}
+async function initRepo(){
+  if(!SY.isConfigured()){showBell('⚠️','Connect GitHub first.');return;}
+  setSB('ld');
+  try{await SY.initRepo();setSB('ok');showBell('✅ Repo Ready','data/ files created in your repo.');}
+  catch(e){setSB('er');showBell('❌ Error',e.message);}
+}
+function disconnectGH(){SY.clearConfig();loadGHStatus();showBell('🔌 Disconnected','Using local storage.');}
+async function saveDriveConfig(){
+  const cid=document.getElementById('sDriveClientId').value.trim();
+  if(!cid){showBell('⚠️','Enter a Client ID.');return;}
+  setSB('ld');
+  try{
+    const s=await SY.getSettings().catch(()=>({}));
+    s.driveClientId=cid;await SY.saveSettings(s);setSB('ok');
+    loadDriveStatus(s);showBell('✅ Drive config saved','Product images will now upload to Google Drive.');
+  }catch(e){setSB('er');showBell('⚠️ Saved locally',e.message);}
+}
+async function clearDriveConfig(){
+  const s=await SY.getSettings().catch(()=>({}));
+  delete s.driveClientId;await SY.saveSettings(s).catch(()=>{});
+  document.getElementById('sDriveClientId').value='';
+  loadDriveStatus(s);showBell('🗑 Drive removed','Images will now save locally.');
+}
+async function savePayment(){
+  const data={bank:{name:document.getElementById('sBankName').value.trim(),acct:document.getElementById('sBankAcct').value.trim(),acctName:document.getElementById('sBankAcctName').value.trim()}};
+  setSB('ld');
+  try{const s=await SY.getSettings().catch(()=>({}));await SY.saveSettings({...s,...data});setSB('ok');showBell('✅ Saved','Payment details updated for all customers.');}
+  catch(e){setSB('er');showBell('⚠️ Saved locally',e.message);}
+}
+async function changePass(){
+  const np=document.getElementById('sNewPass').value;
+  const cp=document.getElementById('sConfPass').value;
+  if(!np||np.length<6){showBell('⚠️','Minimum 6 characters.');return;}
+  if(np!==cp){showBell('⚠️','Passwords do not match.');return;}
+  localStorage.setItem('sy_admin_pass',np);ADMIN_PASS=np;
+  document.getElementById('sNewPass').value='';document.getElementById('sConfPass').value='';
+  setSB('ld');
+  try{const s=await SY.getSettings().catch(()=>({}));await SY.saveSettings({...s,adminPass:np});setSB('ok');}
+  catch(e){setSB('ok');}
+  showBell('✅ Password updated','New password is active immediately.');
+}
+function confirmClearOrders(){pendingAction=()=>{localStorage.removeItem('sy_orders');loadAll();showBell('🗑','Local orders cleared.');};openConfirm('⚠️','Clear Local Orders?','Removes cached orders from this browser. GitHub unaffected.','Clear',true);}
+function confirmClearAll(){pendingAction=()=>{localStorage.clear();location.reload();};openConfirm('⚠️','Clear All Local Data?','Deletes all cached data, images, and passwords from this browser.','Clear Everything',true);}
+// CONFIRM
+function openConfirm(icon,title,msg,yes,danger){
+  document.getElementById('cfIcon').textContent=icon;document.getElementById('cfTitle').textContent=title;document.getElementById('cfMsg').textContent=msg;
+  const y=document.getElementById('cfYes');y.textContent=yes;y.className='cfyes'+(danger?' danger':'');
+  document.getElementById('cfBg').classList.add('open');
+}
+function closeConfirm(){document.getElementById('cfBg').classList.remove('open');pendingAction=null;}
+function doConfirm(){if(pendingAction)pendingAction();closeConfirm();}
+// UTIL
+function fmtTime(ts){const d=Date.now()-ts,m=Math.floor(d/60000);if(m<1)return'Just now';if(m<60)return`${m}m ago`;return`${Math.floor(m/60)}h ${m%60}m ago`;}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeConfirm();closePM();}});
+['cfBg','pmBg'].forEach(id=>document.getElementById(id).addEventListener('click',e=>{if(e.target===document.getElementById(id)){closeConfirm();closePM();}}));
+</script>
+</body>
+</html>

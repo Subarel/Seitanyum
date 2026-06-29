@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1E3A0F">
+<title>SeitanYum — Order Now</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="../assets/db.js"></script>
+<style>
+:root{--F:#1E3A0F;--S:#4A7A28;--L:#8DC63F;--LS:#C5E07A;--A:#E8A020;--C:#FAF6EF;--W:#F4EFE4;--P:#EDE7D9;--BD:#D9D0C0;--M:#6B6355;--D:#1A1714;--WH:#FFFDF9;--R:#DC2626;--sh:0 4px 16px rgba(30,58,15,.10);--SH:0 12px 40px rgba(30,58,15,.15);--r:14px;--rl:20px;--rx:26px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
+body{background:var(--C);font-family:'Plus Jakarta Sans',sans-serif;color:var(--D);overflow-x:hidden;}
+.sb{height:3px;position:fixed;top:0;left:0;right:0;z-index:999;transition:width .4s,background .3s;width:0;}
+.sb.ld{width:70%;background:var(--A);}.sb.ok{width:100%;background:var(--L);}.sb.er{width:100%;background:var(--R);}
+/* TICKER */
+.tick{background:var(--F);height:36px;display:flex;align-items:stretch;overflow:hidden;}
+.tlbl{background:var(--L);color:var(--F);font-family:'Syne',sans-serif;font-weight:800;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:0 14px;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;}
+.ttrack{flex:1;overflow:hidden;display:flex;align-items:center;}
+.tinner{display:flex;gap:48px;white-space:nowrap;animation:tickanim 28s linear infinite;padding-left:24px;}
+@keyframes tickanim{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.titem{color:rgba(255,255,255,.9);font-size:12px;display:flex;align-items:center;gap:8px;}
+.tbadge{background:var(--L);color:var(--F);font-family:'Syne',sans-serif;font-weight:800;font-size:10px;padding:1px 8px;border-radius:20px;}
+.tidle{color:rgba(255,255,255,.4);font-size:12px;padding-left:20px;}
+/* HEADER */
+.hdr{background:var(--WH);border-bottom:1.5px solid var(--BD);position:sticky;top:0;z-index:90;box-shadow:0 2px 8px rgba(30,58,15,.06);}
+.hdri{max-width:1100px;margin:0 auto;padding:0 16px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.logo{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;color:var(--F);text-decoration:none;letter-spacing:-.5px;flex-shrink:0;}
+.logo em{font-style:normal;color:var(--L);}
+.hnav{display:flex;align-items:center;gap:2px;flex:1;justify-content:center;}
+.nb{padding:6px 12px;border-radius:30px;font-size:13px;font-weight:600;color:var(--M);background:none;border:none;cursor:pointer;font-family:inherit;transition:all .18s;}
+.nb:hover,.nb.on{background:var(--W);color:var(--F);}
+.hdrr{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.cbtn{background:var(--F);color:#fff;border:none;border-radius:40px;padding:8px 18px;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .18s;}
+.cbtn:hover{background:var(--S);}
+.cbub{background:var(--L);color:var(--F);width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.cbub.pop{animation:popanim .25s ease;}
+@keyframes popanim{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.mmbtn{display:none;background:var(--W);border:none;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;align-items:center;justify-content:center;}
+/* MOBILE NAV */
+.mnav{position:fixed;inset:0;z-index:200;pointer-events:none;}
+.mnbg{position:absolute;inset:0;background:rgba(0,0,0,.42);opacity:0;transition:opacity .25s;backdrop-filter:blur(2px);}
+.mnpanel{position:absolute;top:0;left:0;bottom:0;width:260px;background:var(--WH);transform:translateX(-100%);transition:transform .3s cubic-bezier(.22,.68,0,1.2);padding:22px 16px;display:flex;flex-direction:column;gap:5px;overflow-y:auto;}
+.mnav.open .mnbg{opacity:1;pointer-events:all;}
+.mnav.open .mnpanel{transform:translateX(0);pointer-events:all;}
+.mnlogo{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--F);margin-bottom:14px;padding-bottom:14px;border-bottom:1.5px solid var(--BD);}
+.mnlogo em{font-style:normal;color:var(--L);}
+.ml{padding:10px 14px;border-radius:12px;font-size:14px;font-weight:600;color:var(--M);background:none;border:none;cursor:pointer;font-family:inherit;text-align:left;transition:all .18s;width:100%;}
+.ml:hover{background:var(--W);color:var(--F);}
+.ml.sp{color:var(--A);}
+.msep{height:1px;background:var(--BD);margin:5px 0;}
+/* EDIT BANNER */
+.eb{background:var(--A);color:var(--D);padding:8px 16px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;display:none;align-items:center;justify-content:center;gap:10px;position:sticky;top:58px;z-index:89;flex-wrap:wrap;}
+.eb.show{display:flex;}
+.ebb{background:rgba(0,0,0,.12);border:none;border-radius:16px;padding:3px 11px;font-size:11px;font-weight:700;cursor:pointer;color:var(--D);font-family:inherit;}
+/* HERO */
+.hero{background:linear-gradient(150deg,var(--F) 0%,var(--S) 100%);padding:52px 20px 44px;position:relative;overflow:hidden;}
+.hb{position:absolute;border-radius:50%;pointer-events:none;opacity:.1;}
+.hb1{width:340px;height:340px;background:var(--L);top:-80px;right:-60px;}
+.hb2{width:200px;height:200px;background:var(--A);bottom:-70px;left:-40px;}
+.heroi{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
+.hey{display:inline-flex;align-items:center;gap:5px;background:rgba(141,198,63,.18);border:1px solid rgba(141,198,63,.35);color:var(--LS);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px;}
+.h1{font-family:'Syne',sans-serif;font-size:clamp(26px,4.5vw,52px);font-weight:800;color:#fff;line-height:1.06;letter-spacing:-1.5px;margin-bottom:14px;}
+.h1 .acc{color:var(--L);}
+.hp{color:rgba(255,255,255,.7);font-size:15px;line-height:1.65;margin-bottom:22px;max-width:380px;}
+.hctas{display:flex;gap:10px;flex-wrap:wrap;}
+.btnl{background:var(--L);color:var(--F);border:none;border-radius:40px;padding:12px 24px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px;}
+.btnl:hover{background:var(--LS);}
+.btng{background:rgba(255,255,255,.1);color:#fff;border:1.5px solid rgba(255,255,255,.25);border-radius:40px;padding:11px 22px;font-family:'Syne',sans-serif;font-weight:600;font-size:14px;cursor:pointer;transition:all .18s;}
+.btng:hover{background:rgba(255,255,255,.18);}
+.hstats{display:flex;gap:0;margin-top:28px;border-top:1px solid rgba(255,255,255,.12);padding-top:22px;}
+.hstat{flex:1;}
+.hstat:not(:last-child){border-right:1px solid rgba(255,255,255,.12);padding-right:18px;margin-right:18px;}
+.hsn{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--L);line-height:1;}
+.hsl{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;}
+/* SHOWCASE */
+.showcase{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.scc{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;backdrop-filter:blur(6px);}
+.scc:hover{background:rgba(255,255,255,.18);transform:translateY(-2px);}
+.scc.ft{grid-column:1/-1;display:flex;align-items:center;gap:14px;text-align:left;background:rgba(141,198,63,.15);border-color:rgba(141,198,63,.35);}
+.sce{font-size:34px;margin-bottom:5px;}
+.scc.ft .sce{font-size:40px;margin-bottom:0;flex-shrink:0;}
+.scn{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;}
+.scp{font-size:11px;color:var(--LS);margin-top:2px;font-weight:600;}
+.schot{background:var(--A);color:var(--D);font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;display:inline-block;margin-bottom:3px;text-transform:uppercase;}
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:32px 16px 80px;}
+.sect{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;color:var(--F);letter-spacing:-.5px;}
+.secs{font-size:13px;color:var(--M);margin-top:3px;margin-bottom:18px;}
+/* FILTERS */
+.frow{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.fc{padding:6px 15px;border-radius:30px;font-size:12px;font-weight:700;color:var(--M);background:var(--WH);border:1.5px solid var(--BD);cursor:pointer;transition:all .18s;font-family:inherit;}
+.fc:hover{border-color:var(--L);color:var(--F);}
+.fc.on{background:var(--F);color:#fff;border-color:var(--F);}
+/* PRODUCT GRID */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px;}
+.pcard{background:var(--WH);border:1.5px solid var(--BD);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;position:relative;}
+.pcard:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:var(--L);}
+.pimg{height:165px;background:linear-gradient(135deg,var(--S),var(--F));display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden;}
+.pimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
+.pimg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(30,58,15,.28) 0%,transparent 60%);z-index:2;pointer-events:none;}
+.pvbadge{position:absolute;top:10px;left:10px;background:rgba(30,58,15,.85);color:var(--L);font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;z-index:4;}
+.ptbadge{position:absolute;top:10px;right:10px;background:var(--A);color:var(--D);font-size:9px;font-weight:800;padding:2px 8px;border-radius:20px;z-index:4;text-transform:uppercase;}
+/* edit overlay */
+.uov{position:absolute;inset:0;background:rgba(30,58,15,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;z-index:5;gap:3px;cursor:pointer;}
+.pcard.em .pimg:hover .uov{opacity:1;}
+.uovi{font-size:26px;}.uovt{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#fff;}
+.uovh{font-size:9px;color:rgba(255,255,255,.6);}
+.uovr{margin-top:5px;background:rgba(220,38,38,.9);color:#fff;border:none;border-radius:14px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pbody{padding:14px;flex:1;display:flex;flex-direction:column;}
+.pcat{font-size:9px;font-weight:700;color:var(--S);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;}
+.pname{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--D);margin-bottom:4px;line-height:1.2;}
+.pdesc{font-size:12px;color:var(--M);line-height:1.5;flex:1;margin-bottom:10px;}
+.pmacros{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.mc{font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;background:var(--W);color:var(--F);}
+.pfoot{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.pprice{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--F);}
+.pprice sub{font-size:10px;font-weight:600;color:var(--M);}
+.padd{background:var(--F);color:#fff;border:none;border-radius:30px;padding:8px 15px;font-weight:700;font-size:11px;cursor:pointer;transition:all .18s;font-family:inherit;white-space:nowrap;}
+.padd:hover{background:var(--S);}
+.padd.added{background:var(--L);color:var(--F);}
+/* BENEFITS */
+.bband{background:var(--F);padding:48px 20px;}
+.bbi{max-width:1100px;margin:0 auto;}
+.bbt{text-align:center;margin-bottom:28px;}
+.bbt h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:5px;}
+.bbt h2 em{font-style:normal;color:var(--L);}
+.bbt p{color:rgba(255,255,255,.55);font-size:13px;}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px;}
+.bcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:18px 14px;transition:all .2s;}
+.bcard:hover{background:rgba(141,198,63,.1);border-color:rgba(141,198,63,.3);}
+.bci{font-size:26px;margin-bottom:8px;}
+.bct{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:#fff;margin-bottom:4px;}
+.bcb{font-size:11px;color:rgba(255,255,255,.55);line-height:1.5;}
+/* HOW IT WORKS */
+.hiws{background:var(--W);padding:48px 20px;}
+.hiwi{max-width:1100px;margin:0 auto;}
+.hiwt{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--F);text-align:center;letter-spacing:-.5px;margin-bottom:5px;}
+.hiws2{text-align:center;color:var(--M);margin-bottom:36px;font-size:13px;}
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;}
+.steps::before{content:'';position:absolute;top:24px;left:10%;right:10%;height:2px;background:var(--BD);}
+.step{text-align:center;padding:0 6px;position:relative;z-index:1;}
+.stci{width:48px;height:48px;background:var(--F);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;margin:0 auto 12px;border:3px solid var(--C);box-shadow:var(--sh);}
+.stt{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:var(--F);margin-bottom:3px;}
+.std{font-size:10px;color:var(--M);line-height:1.4;}
+/* ABOUT */
+.abts{background:var(--P);padding:48px 20px;}
+.abti{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;}
+.abth{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--F);letter-spacing:-.5px;margin-bottom:12px;}
+.abtp{font-size:13px;color:var(--M);line-height:1.7;margin-bottom:10px;}
+.aptags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px;}
+.aptag{background:var(--F);color:#fff;font-size:10px;font-weight:700;padding:3px 11px;border-radius:20px;}
+.ntable{background:var(--WH);border-radius:var(--rl);overflow:hidden;border:1.5px solid var(--BD);}
+.nth{background:var(--F);padding:12px 16px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--L);text-transform:uppercase;letter-spacing:1px;}
+.ntr{display:flex;justify-content:space-between;padding:10px 16px;font-size:12px;border-bottom:1px solid var(--BD);}
+.ntr:last-child{border-bottom:none;}
+.ntk{color:var(--M);}
+.ntv{font-weight:700;color:var(--D);}
+.ntv.hi{color:var(--S);font-family:'Syne',sans-serif;}
+/* FOOTER */
+.foots{background:var(--D);padding:24px 20px;}
+.footi{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.flogo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;}
+.flogo em{font-style:normal;color:var(--L);}
+.flinks{display:flex;gap:14px;flex-wrap:wrap;}
+.flnk{font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;background:none;border:none;font-family:inherit;transition:color .18s;}
+.flnk:hover{color:var(--L);}
+.fcopy{font-size:11px;color:rgba(255,255,255,.3);}
+/* CART */
+.dov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(2px);}
+.dov.open{opacity:1;pointer-events:all;}
+.drw{position:fixed;right:0;top:0;bottom:0;width:min(410px,100vw);background:var(--WH);z-index:201;display:flex;flex-direction:column;box-shadow:-10px 0 50px rgba(0,0,0,.16);transform:translateX(100%);transition:transform .32s cubic-bezier(.22,.68,0,1.2);}
+.drw.open{transform:translateX(0);}
+.drwh{padding:16px;border-bottom:1.5px solid var(--BD);display:flex;align-items:center;justify-content:space-between;}
+.drwt{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--F);}
+.drwx{width:32px;height:32px;background:var(--W);border:none;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--M);}
+.drwb{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.ce{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;color:var(--M);}
+.ce .ei{font-size:48px;margin-bottom:12px;}
+.ce h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--F);margin-bottom:4px;}
+.citm{background:var(--C);border:1.5px solid var(--BD);border-radius:var(--r);padding:11px;display:flex;gap:10px;animation:slii .25s ease;}
+@keyframes slii{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+.cite{font-size:32px;flex-shrink:0;line-height:1;}
+.citd{flex:1;min-width:0;}
+.citn{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--D);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.citp{font-size:11px;font-weight:600;color:var(--S);}
+.citq{display:flex;align-items:center;gap:6px;margin-top:6px;}
+.qbtn{width:24px;height:24px;background:var(--F);color:#fff;border:none;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s;}
+.qbtn:hover{background:var(--S);}
+.qbtn.rm{background:var(--R);}
+.qnum{font-family:'Syne',sans-serif;font-weight:800;font-size:13px;min-width:18px;text-align:center;}
+.drwf{padding:14px;border-top:1.5px solid var(--BD);}
+.trow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;}
+.tlbl{font-size:12px;color:var(--M);font-weight:600;}
+.tamt{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--F);}
+.finp{width:100%;padding:10px 14px;border:1.5px solid var(--BD);border-radius:var(--r);font-family:inherit;font-size:13px;color:var(--D);background:var(--C);outline:none;transition:border-color .18s;margin-bottom:9px;}
+.finp:focus{border-color:var(--L);background:var(--WH);}
+.finp.err{border-color:var(--R);}
+.obtn{width:100%;background:var(--F);color:#fff;border:none;border-radius:40px;padding:13px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:7px;}
+.obtn:hover{background:var(--S);}
+.obtn:disabled{opacity:.5;cursor:not-allowed;}
+/* MODALS */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(3px);}
+.mbg.open{opacity:1;pointer-events:all;}
+.mbx{background:var(--WH);border-radius:var(--rx);padding:28px 24px;max-width:440px;width:100%;box-shadow:var(--SH);transform:scale(.92);transition:transform .26s cubic-bezier(.22,.68,0,1.2);max-height:90vh;overflow-y:auto;}
+.mbg.open .mbx{transform:scale(1);}
+.micon{font-size:52px;text-align:center;margin-bottom:7px;}
+.mtitle{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--F);text-align:center;margin-bottom:4px;}
+.msub{text-align:center;color:var(--M);font-size:12px;line-height:1.6;margin-bottom:16px;}
+.ordnum{background:var(--F);color:var(--L);font-family:'Syne',sans-serif;font-size:30px;font-weight:800;letter-spacing:4px;text-align:center;padding:11px 18px;border-radius:var(--r);margin-bottom:14px;}
+.paycard{background:var(--W);border:1.5px dashed var(--BD);border-radius:var(--r);padding:14px 16px;margin-bottom:12px;}
+.paycardt{font-size:9px;font-weight:700;color:var(--S);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;}
+.payrow{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;}
+.payrow:last-child{margin-bottom:0;}
+.payk{color:var(--M);}
+.payv{font-weight:700;color:var(--D);font-family:'Syne',sans-serif;}
+.amtrow{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--F);text-align:center;margin-bottom:12px;}
+.bellbtn{width:100%;background:var(--A);color:var(--D);border:none;border-radius:40px;padding:13px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px;}
+.bellbtn:hover{opacity:.88;}
+.bellbtn:disabled{opacity:.5;cursor:not-allowed;}
+.disbtn{width:100%;background:transparent;color:var(--M);border:1.5px solid var(--BD);border-radius:40px;padding:11px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .18s;}
+.disbtn:hover{background:var(--W);}
+/* NOT CONFIGURED BANNER */
+.nocfg{background:#FEF3C7;border-bottom:1.5px solid #F59E0B;padding:10px 20px;text-align:center;font-size:13px;color:#92400E;display:none;}
+.nocfg.show{display:block;}
+.nocfg a{color:#B45309;font-weight:700;}
+/* CELEBRATION */
+.cel{position:fixed;inset:0;background:var(--F);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;opacity:0;pointer-events:none;transition:opacity .35s;}
+.cel.open{opacity:1;pointer-events:all;}
+.celcf{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.celp{position:absolute;top:-20px;animation:cfall linear forwards;}
+@keyframes cfall{to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+.celcnt{text-align:center;position:relative;z-index:1;max-width:360px;}
+.cele{font-size:68px;margin-bottom:9px;animation:cbo .6s ease infinite alternate;}
+@keyframes cbo{from{transform:scale(1)}to{transform:scale(1.1)}}
+.celt{font-family:'Syne',sans-serif;font-size:clamp(22px,5vw,42px);font-weight:800;color:var(--L);letter-spacing:-2px;line-height:1.1;margin-bottom:7px;}
+.cels{color:rgba(255,255,255,.7);font-size:14px;margin-bottom:18px;}
+.celn{background:var(--L);color:var(--F);font-family:'Syne',sans-serif;font-size:42px;font-weight:800;letter-spacing:5px;padding:13px 36px;border-radius:16px;display:inline-block;margin-bottom:18px;box-shadow:0 6px 28px rgba(141,198,63,.4);}
+.celnote{font-size:12px;color:rgba(255,255,255,.5);margin-bottom:24px;}
+.celcl{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.25);border-radius:40px;padding:11px 30px;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;cursor:pointer;}
+/* TOAST */
+.toast{position:fixed;bottom:18px;right:14px;background:var(--F);color:#fff;padding:11px 16px;border-radius:var(--r);font-size:12px;font-weight:600;box-shadow:var(--SH);transform:translateY(70px);opacity:0;transition:all .3s cubic-bezier(.22,.68,0,1.2);z-index:400;display:flex;align-items:center;gap:8px;max-width:min(280px,calc(100vw - 28px));}
+.toast.show{transform:translateY(0);opacity:1;}
+/* EDIT FAB */
+.efab{position:fixed;bottom:18px;left:14px;background:var(--F);color:#fff;border:none;border-radius:40px;padding:10px 18px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;cursor:pointer;z-index:150;box-shadow:var(--SH);display:flex;align-items:center;gap:6px;transition:all .2s;}
+.efab:hover{background:var(--S);}
+.efab.act{background:var(--A);color:var(--D);}
+/* IMAGE MANAGER */
+.imov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;opacity:0;pointer-events:none;transition:opacity .22s;backdrop-filter:blur(2px);}
+.imov.open{opacity:1;pointer-events:all;}
+.impanel{position:fixed;left:0;top:0;bottom:0;width:min(390px,100vw);background:var(--WH);z-index:301;display:flex;flex-direction:column;box-shadow:10px 0 50px rgba(0,0,0,.16);transform:translateX(-100%);transition:transform .32s cubic-bezier(.22,.68,0,1.2);}
+.impanel.open{transform:translateX(0);}
+.imph{background:var(--F);padding:16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.impt{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;}
+.impx{width:32px;height:32px;background:rgba(255,255,255,.12);border:none;border-radius:50%;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.impb{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.imrow{background:var(--C);border:1.5px solid var(--BD);border-radius:var(--r);overflow:hidden;display:flex;align-items:stretch;transition:border-color .2s;}
+.imrow:hover{border-color:var(--L);}
+.imthumb{width:80px;flex-shrink:0;background:linear-gradient(135deg,var(--S),var(--F));display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;overflow:hidden;}
+.imthumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.iminfo{flex:1;padding:11px 12px;display:flex;flex-direction:column;justify-content:center;gap:4px;}
+.imin{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--D);}
+.imis{font-size:10px;color:var(--M);}
+.imis .has{color:var(--S);font-weight:700;}
+.imbtns{display:flex;gap:6px;margin-top:3px;}
+.imub{background:var(--F);color:#fff;border:none;border-radius:14px;padding:4px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
+.imub:hover{background:var(--S);}
+.imrb{background:#FEE2E2;color:var(--R);border:none;border-radius:14px;padding:4px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
+.impf{padding:12px 14px;border-top:1.5px solid var(--BD);}
+.impn{font-size:10px;color:var(--M);line-height:1.5;text-align:center;margin-bottom:8px;}
+.imca{width:100%;background:#FEE2E2;color:var(--R);border:none;border-radius:20px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+/* GOOGLE DRIVE UPLOAD STATUS */
+.drive-status{background:rgba(30,58,15,.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--M);margin-top:6px;display:none;}
+.drive-status.show{display:block;}
+/* RESPONSIVE */
+@media(max-width:800px){.heroi{grid-template-columns:1fr;}.showcase{display:none;}.hnav{display:none;}.mmbtn{display:flex;}.abti{grid-template-columns:1fr;}.steps{grid-template-columns:1fr 1fr;gap:18px;}.steps::before{display:none;}.footi{flex-direction:column;text-align:center;}.flinks{justify-content:center;}}
+@media(max-width:480px){.hero{padding:34px 14px 30px;}.h1{font-size:26px;}.steps{grid-template-columns:1fr;}.bgrid{grid-template-columns:1fr 1fr;}.pgrid{grid-template-columns:1fr 1fr;}.pimg{height:120px;font-size:48px!important;}.efab{padding:8px 13px;font-size:11px;}}
+@media(max-width:340px){.pgrid{grid-template-columns:1fr;}}
+section{scroll-margin-top:68px;}
+</style>
+</head>
+<body>
+<div class="sb" id="sb"></div>
+<!-- NOT CONFIGURED BANNER (shows when admin hasn't set up GitHub yet) -->
+<div class="nocfg" id="nocfgBanner">⚠️ Store not yet connected to live backend — orders are saved locally. <a href="../admin/index.html">Admin: connect GitHub →</a></div>
+<!-- TICKER -->
+<div class="tick"><div class="tlbl">🔔 COLLECT</div><div class="ttrack"><div class="tinner" id="ticker" style="display:none"></div><div class="tidle" id="tickerIdle">🌱 SeitanYum — Real plant protein. Order below!</div></div></div>
+<!-- MOBILE NAV -->
+<div class="mnav" id="mnav"><div class="mnbg" onclick="closeMN()"></div><div class="mnpanel"><div class="mnlogo">Seitan<em>Yum</em></div><button class="ml" onclick="goTo('menu');closeMN()">🍽️ Menu</button><button class="ml" onclick="goTo('how');closeMN()">📋 How it Works</button><button class="ml" onclick="goTo('why');closeMN()">🌿 Why Seitan</button><button class="ml" onclick="goTo('about');closeMN()">ℹ️ About</button><div class="msep"></div><button class="ml sp" onclick="location.href='../admin/index.html'">🔐 Admin</button><button class="ml" onclick="location.href='../index.html'">🏠 Home</button></div></div>
+<!-- EDIT BANNER -->
+<div class="eb" id="editBanner">✏️ Edit Mode — tap any product image to upload<button class="ebb" onclick="openIM()">Images</button><button class="ebb" onclick="exitEdit()">✕ Exit</button></div>
+<!-- HEADER -->
+<header class="hdr"><div class="hdri"><a class="logo" href="../index.html">Seitan<em>Yum</em></a><nav class="hnav"><button class="nb" onclick="goTo('menu')">Menu</button><button class="nb" onclick="goTo('how')">How it Works</button><button class="nb" onclick="goTo('why')">Why Seitan</button><button class="nb" onclick="goTo('about')">About</button></nav><div class="hdrr"><button class="cbtn" onclick="openCart()">🛒 Cart <div class="cbub" id="cartBubble">0</div></button><button class="mmbtn" onclick="openMN()">☰</button></div></div></header>
+<!-- HERO -->
+<section class="hero"><div class="hb hb1"></div><div class="hb hb2"></div><div class="heroi"><div><div class="hey">🌱 100% Plant-Based Protein</div><h1 class="h1">Real Taste.<br><span class="acc">Zero Animals.</span><br>Full Power.</h1><p class="hp">Premium seitan — high-protein plant food that looks, feels, and tastes like chicken. Soy-free, low-fat, fully satisfying.</p><div class="hctas"><button class="btnl" onclick="goTo('menu')">Browse Menu →</button><button class="btng" onclick="goTo('how')">How it Works</button></div><div class="hstats"><div class="hstat"><div class="hsn">25g</div><div class="hsl">Protein/serving</div></div><div class="hstat"><div class="hsn">Soy-Free</div><div class="hsl">Alternative</div></div><div class="hstat"><div class="hsn">Low</div><div class="hsl">Fat & Carbs</div></div></div></div><div class="showcase" id="showcase"></div></div></section>
+<!-- MENU -->
+<section class="main" id="menu"><div class="sect">🍽️ Today's Menu</div><div class="secs">Tap any item to add it to your cart — made fresh daily.</div><div class="frow"><button class="fc on" onclick="doFilter('all',this)">All</button><button class="fc" onclick="doFilter('ready',this)">Ready to Eat</button><button class="fc" onclick="doFilter('high-protein',this)">High Protein</button><button class="fc" onclick="doFilter('family',this)">Family</button><button class="fc" onclick="doFilter('grilled',this)">Grilled</button></div><div class="pgrid" id="grid"><div style="padding:40px;text-align:center;color:var(--M)">Loading menu…</div></div></section>
+<!-- BENEFITS -->
+<section class="bband" id="why"><div class="bbi"><div class="bbt"><h2>Why Choose <em>Seitan</em>?</h2><p>Science-backed plant protein with real nutritional advantages</p></div><div class="bgrid"><div class="bcard"><div class="bci">💪</div><div class="bct">High in Protein</div><div class="bcb">15–25g per serving — muscle, repair, satiety.</div></div><div class="bcard"><div class="bci">❤️</div><div class="bct">Heart-Friendly</div><div class="bcb">Naturally low in saturated fat.</div></div><div class="bcard"><div class="bci">⚡</div><div class="bct">Low Carb</div><div class="bcb">Lower than lentils, beans, most plant proteins.</div></div><div class="bcard"><div class="bci">🔬</div><div class="bct">Rich in Minerals</div><div class="bcb">Iron, selenium, phosphorus.</div></div><div class="bcard"><div class="bci">🍗</div><div class="bct">Meat-Like Texture</div><div class="bcb">Chewy, satisfying — easiest plant swap.</div></div><div class="bcard"><div class="bci">🚫</div><div class="bct">Soy-Free</div><div class="bcb">Pure wheat gluten — no soy.</div></div></div></div></section>
+<!-- HOW -->
+<section class="hiws" id="how"><div class="hiwi"><div class="hiwt">How Ordering Works</div><div class="hiws2">Five steps from browsing to collecting</div><div class="steps"><div class="step"><div class="stci">🍽️</div><div class="stt">Browse</div><div class="std">Pick items, add to cart</div></div><div class="step"><div class="stci">🛒</div><div class="stt">Order</div><div class="std">Enter name, confirm</div></div><div class="step"><div class="stci">💸</div><div class="stt">Pay</div><div class="std">Transfer to our account</div></div><div class="step"><div class="stci">🔔</div><div class="stt">Ring Bell</div><div class="std">Tap to notify us</div></div><div class="step"><div class="stci">🎉</div><div class="stt">Collect!</div><div class="std">Your number appears</div></div></div></div></section>
+<!-- ABOUT -->
+<section class="abts" id="about"><div class="abti"><div><h2 class="abth">What is Seitan?</h2><p class="abtp">Seitan (say-TAN) is a plant-based protein from wheat gluten — eaten in Asia for over a thousand years, now loved worldwide.</p><p class="abtp">Often called "vegan chicken" because of its satisfying texture. It absorbs marinades beautifully — that's why our menu tastes genuinely great.</p><p class="abtp">Completely soy-free — perfect for anyone with soy sensitivities.</p><div class="aptags"><span class="aptag">🌱 Plant-Based</span><span class="aptag">🚫 Soy Free</span><span class="aptag">💪 High Protein</span><span class="aptag">🫀 Heart Healthy</span></div></div><div class="ntable"><div class="nth">Nutrition per 100g Serving</div><div class="ntr"><div class="ntk">Protein</div><div class="ntv hi">25g</div></div><div class="ntr"><div class="ntk">Total Fat</div><div class="ntv">1.9g</div></div><div class="ntr"><div class="ntk">Saturated Fat</div><div class="ntv">0.3g</div></div><div class="ntr"><div class="ntk">Carbohydrates</div><div class="ntv">4g</div></div><div class="ntr"><div class="ntk">Iron</div><div class="ntv hi">11% DV</div></div><div class="ntr"><div class="ntk">Selenium</div><div class="ntv hi">16% DV</div></div><div class="ntr"><div class="ntk">Calories</div><div class="ntv">120 kcal</div></div></div></div></section>
+<footer class="foots"><div class="footi"><div class="flogo">Seitan<em>Yum</em></div><div class="flinks"><button class="flnk" onclick="goTo('menu')">Menu</button><button class="flnk" onclick="goTo('how')">How it Works</button><button class="flnk" onclick="goTo('about')">About</button><a class="flnk" href="../admin/index.html">Admin</a></div><div class="fcopy">© 2025 SeitanYum</div></div></footer>
+<!-- CART -->
+<div class="dov" id="dov" onclick="closeCart()"></div>
+<aside class="drw" id="drw"><div class="drwh"><div class="drwt">🛒 Your Order</div><button class="drwx" onclick="closeCart()">✕</button></div><div class="drwb" id="cartBody"></div><div id="cartFt" style="display:none"><div class="drwf"><div class="trow"><div class="tlbl">Total</div><div class="tamt" id="cartTotal">₦0</div></div><input class="finp" id="custName" type="text" placeholder="Your name 😊" maxlength="40" autocomplete="off"/><button class="obtn" id="placeBtn" onclick="placeOrder()">Place Order 🚀</button></div></div></aside>
+<!-- ORDER MODAL -->
+<div class="mbg" id="orderModal"><div class="mbx"><div class="micon">🎉</div><div class="mtitle">Order Placed!</div><div class="msub">Send payment then ring the bell to notify us.</div><div class="ordnum" id="orderNumDisp">—</div><div class="paycard"><div class="paycardt">Send Payment To</div><div class="payrow"><div class="payk">Bank</div><div class="payv" id="payBank">First Bank Nigeria</div></div><div class="payrow"><div class="payk">Account No.</div><div class="payv" id="payAcct">3145 6789 02</div></div><div class="payrow"><div class="payk">Name</div><div class="payv" id="payName">SeitanYum Ltd</div></div></div><div class="amtrow" id="orderAmt"></div><button class="bellbtn" id="bellBtn" onclick="ringBell()">🔔 I've Paid — Ring the Bell!</button><button class="disbtn" onclick="closeOrderModal()">Close & track order</button></div></div>
+<!-- CELEBRATION -->
+<div class="cel" id="celScreen"><div class="celcf" id="confetti"></div><div class="celcnt"><div class="cele">🎊</div><div class="celt">Your Order<br>is Ready!</div><div class="cels">Step forward and collect. Show this screen.</div><div class="celn" id="celNum">—</div><div class="celnote">Your number is on the board ↑</div><button class="celcl" onclick="dismissCel()">✅ Got it, thank you!</button></div></div>
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toastIcon"></span><span id="toastMsg"></span></div>
+<!-- EDIT FAB -->
+<button class="efab" id="editFab" onclick="handleEditFab()">✏️ Edit Images</button>
+<!-- OWNER UNLOCK MODAL -->
+<div class="mbg" id="ownerModal"><div class="mbx" style="max-width:340px"><div class="micon">🔐</div><div class="mtitle" style="font-size:18px">Owner Access</div><div class="msub">Enter your password to edit product images.</div><input id="ownerPass" type="password" class="finp" placeholder="••••••••" style="text-align:center;letter-spacing:3px;font-size:16px" onkeydown="if(event.key==='Enter')ownerUnlock()"/><div id="ownerErr" style="color:var(--R);font-size:11px;text-align:center;min-height:15px;margin-bottom:8px"></div><button class="obtn" onclick="ownerUnlock()" style="margin-bottom:8px">Unlock Edit Mode</button><button class="disbtn" onclick="closeOwnerModal()">Cancel</button></div></div>
+<!-- IMAGE MANAGER -->
+<div class="imov" id="imov" onclick="closeIM()"></div>
+<aside class="impanel" id="impanel"><div class="imph"><div class="impt">📸 Product Images</div><button class="impx" onclick="closeIM()">✕</button></div><div class="impb" id="impBody"></div><div class="impf"><div class="impn">Saved in your browser (local) or Google Drive (global, set up in Admin). Max 4MB.</div><button class="imca" onclick="clearAllImgs()">🗑 Clear All Local Images</button></div></aside>
+<input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none"/>
+<script>
+'use strict';
+// ── STATE
+let PRODUCTS=[], SETTINGS={}, cart={}, currentOrder=null, activeFilter='all', editMode=false, pendUploadId=null;
+const CAT={ready:'Ready to Eat','high-protein':'High Protein',family:'Family',grilled:'Grilled'};
+// ── LOCAL IMAGE HELPERS (fallback when no Drive)
+const getLocalImg=id=>localStorage.getItem('sy_img_'+id)||null;
+const saveLocalImg=(id,b64)=>{try{localStorage.setItem('sy_img_'+id,b64);return true;}catch{showToast('⚠️','Image too large');return false;}};
+const removeLocalImg=id=>localStorage.removeItem('sy_img_'+id);
+// Get product image — prefer driveId from product data, fallback to local
+function getProductImg(p){
+  if(p.driveId) return SY.DRIVE.imgUrl(p.driveId);
+  return getLocalImg(p.id);
+}
+// ── SYNC BAR
+function setSB(s){const b=document.getElementById('sb');b.className='sb '+s;if(s==='ok'||s==='er')setTimeout(()=>b.className='sb',1200);}
+// ── INIT
+async function init(){
+  setSB('ld');
+  try{[PRODUCTS,SETTINGS]=await Promise.all([SY.getProducts(),SY.getSettings()]);setSB('ok');}
+  catch(e){PRODUCTS=SY.DP;SETTINGS={};setSB('er');}
+  updatePaymentDisplay();
+  renderProducts();
+  renderShowcase();
+  updateCartUI();
+  pollOrders();
+  setInterval(pollOrders,7000);
+  initScrollNav();
+  // Show not-configured banner if no GitHub setup
+  if(!SY.isConfigured()){
+    document.getElementById('nocfgBanner').classList.add('show');
+  }
+}
+function updatePaymentDisplay(){
+  const b=SETTINGS.bank||{};
+  document.getElementById('payBank').textContent=SY.esc(b.name||'First Bank Nigeria');
+  document.getElementById('payAcct').textContent=SY.esc(b.acct||'3145 6789 02');
+  document.getElementById('payName').textContent=SY.esc(b.acctName||'SeitanYum Ltd');
+}
+// ── RENDER PRODUCTS
+function renderProducts(f='all'){
+  const g=document.getElementById('grid');
+  const list=f==='all'?PRODUCTS:PRODUCTS.filter(p=>p.cat===f);
+  if(!list.length){g.innerHTML='<div style="padding:40px;text-align:center;color:var(--M)">No items in this category.</div>';return;}
+  g.innerHTML=list.map(p=>{
+    const img=getProductImg(p);
+    const imgHTML=img?`<img src="${img}" alt="${SY.esc(p.name)}" loading="lazy" />`:`<span style="position:relative;z-index:1;font-size:58px">${SY.esc(p.emoji)}</span>`;
+    const ovHTML=editMode?`<div class="uov" onclick="event.stopPropagation();triggerUpload(${p.id})"><div class="uovi">📷</div><div class="uovt">${img?'Replace':'Upload'} Photo</div><div class="uovh">JPG · PNG · WebP</div>${img?`<button class="uovr" onclick="event.stopPropagation();removeImg(${p.id})">✕ Remove</button>`:''}</div>`:'';
+    const footBtn=editMode?`<button class="padd" style="background:var(--A);color:var(--D)" onclick="event.stopPropagation();triggerUpload(${p.id})">📷 Photo</button>`:`<button class="padd${cart[p.id]?' added':''}" onclick="event.stopPropagation();addToCart(${p.id})">${cart[p.id]?`✓ ${cart[p.id].qty}`:'+ Add'}</button>`;
+    const cardAction=editMode?`triggerUpload(${p.id})`:`addToCart(${p.id})`;
+    return`<article class="pcard${editMode?' em':''}" onclick="${cardAction}" tabindex="0" role="button" aria-label="${SY.esc(p.name)}">
+      <div class="pimg">${imgHTML}${ovHTML}<span class="pvbadge">🌱 Vegan</span><span class="ptbadge">${SY.esc(p.tag)}</span></div>
+      <div class="pbody">
+        <div class="pcat">${SY.esc(CAT[p.cat]||'Plant-Based')}</div>
+        <div class="pname">${SY.esc(p.name)}</div>
+        <div class="pdesc">${SY.esc(p.desc)}</div>
+        <div class="pmacros">${(p.macros||[]).map(m=>`<span class="mc">${SY.esc(m)}</span>`).join('')}</div>
+        <div class="pfoot"><div class="pprice">₦${p.price.toLocaleString()} <sub>${SY.esc(p.unit)}</sub></div>${footBtn}</div>
+      </div>
+    </article>`;
+  }).join('');
+}
+function renderShowcase(){
+  const el=document.getElementById('showcase');if(!PRODUCTS.length){el.innerHTML='';return;}
+  const top=PRODUCTS.slice(0,5);
+  el.innerHTML=`<div class="scc ft" onclick="addToCart(${top[0].id})"><div class="sce">${SY.esc(top[0].emoji)}</div><div><div class="schot">${SY.esc(top[0].tag)}</div><div class="scn">${SY.esc(top[0].name)}</div><div class="scp">₦${top[0].price.toLocaleString()}</div></div></div>${top.slice(1).map(p=>`<div class="scc" onclick="addToCart(${p.id})"><div class="sce">${SY.esc(p.emoji)}</div><div class="scn">${SY.esc(p.name)}</div><div class="scp">₦${p.price.toLocaleString()}</div></div>`).join('')}`;
+}
+function doFilter(f,btn){activeFilter=f;document.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));btn.classList.add('on');renderProducts(f);}
+// ── CART
+function addToCart(id){
+  if(editMode)return;
+  const p=PRODUCTS.find(x=>x.id===id);if(!p)return;
+  if(!cart[id])cart[id]={...p,qty:0};cart[id].qty++;
+  updateCartUI();renderProducts(activeFilter);
+  showToast('🛒',`${SY.esc(p.name)} added`);
+  const b=document.getElementById('cartBubble');b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');
+}
+function removeOne(id){if(!cart[id])return;cart[id].qty--;if(cart[id].qty<=0)delete cart[id];updateCartUI();renderProducts(activeFilter);}
+function removeItem(id){delete cart[id];updateCartUI();renderProducts(activeFilter);}
+function updateCartUI(){
+  const items=Object.values(cart);
+  const qty=items.reduce((s,i)=>s+i.qty,0);
+  const total=items.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('cartBubble').textContent=qty;
+  document.getElementById('cartTotal').textContent='₦'+total.toLocaleString();
+  const body=document.getElementById('cartBody'),ft=document.getElementById('cartFt');
+  if(!items.length){body.innerHTML=`<div class="ce"><div class="ei">🌿</div><h3>Cart is empty</h3><p>Browse the menu above!</p></div>`;ft.style.display='none';return;}
+  ft.style.display='block';
+  body.innerHTML=items.map(i=>`<div class="citm"><div class="cite">${SY.esc(i.emoji)}</div><div class="citd"><div class="citn">${SY.esc(i.name)}</div><div class="citp">₦${(i.price*i.qty).toLocaleString()}</div><div class="citq"><button class="qbtn" onclick="removeOne(${i.id})">−</button><div class="qnum">${i.qty}</div><button class="qbtn" onclick="addToCart(${i.id})">+</button><button class="qbtn rm" style="margin-left:5px;font-size:10px" onclick="removeItem(${i.id})">✕</button></div></div></div>`).join('');
+}
+function openCart(){document.getElementById('dov').classList.add('open');document.getElementById('drw').classList.add('open');document.body.style.overflow='hidden';}
+function closeCart(){document.getElementById('dov').classList.remove('open');document.getElementById('drw').classList.remove('open');document.body.style.overflow='';}
+// ── ORDER FLOW
+async function placeOrder(){
+  const nEl=document.getElementById('custName');const name=nEl.value.trim();
+  if(!name){nEl.classList.add('err');nEl.focus();showToast('⚠️','Enter your name first');setTimeout(()=>nEl.classList.remove('err'),2000);return;}
+  const items=Object.values(cart);if(!items.length){showToast('⚠️','Cart is empty');return;}
+  const total=items.reduce((s,i)=>s+i.price*i.qty,0);
+  const num='SY'+Math.floor(1000+Math.random()*9000);
+  const order={num,name,items:items.map(i=>({...i})),total,status:'pending',ts:Date.now(),createdAt:new Date().toISOString()};
+  currentOrder=order;
+  const btn=document.getElementById('placeBtn');btn.disabled=true;btn.textContent='Saving…';setSB('ld');
+  try{await SY.addOrder(order);setSB('ok');}
+  catch(e){setSB('er');showToast('⚠️','Saved locally — will sync when possible');}
+  btn.disabled=false;btn.textContent='Place Order 🚀';
+  closeCart();
+  document.getElementById('orderNumDisp').textContent=num;
+  document.getElementById('orderAmt').textContent='Amount to Send: ₦'+total.toLocaleString();
+  const bb=document.getElementById('bellBtn');bb.disabled=false;bb.textContent="🔔 I've Paid — Ring the Bell!";
+  document.getElementById('orderModal').classList.add('open');
+}
+async function ringBell(){
+  if(!currentOrder)return;
+  const bb=document.getElementById('bellBtn');bb.disabled=true;bb.textContent='Notifying…';setSB('ld');
+  try{await SY.updateStatus(currentOrder.num,'paid');setSB('ok');bb.textContent='✅ Notified! We got your ping 🔔';}
+  catch(e){setSB('er');bb.textContent='✅ Saved locally';}
+  cart={};updateCartUI();renderProducts(activeFilter);showToast('🔔','Bell rung! Preparing your order.');
+}
+function closeOrderModal(){document.getElementById('orderModal').classList.remove('open');}
+// ── POLL FOR READY ORDERS
+async function pollOrders(){
+  try{
+    const orders=await SY.getOrders();
+    const ready=orders.filter(o=>o.status==='ready');
+    const ticker=document.getElementById('ticker'),idle=document.getElementById('tickerIdle');
+    if(!ready.length){ticker.style.display='none';idle.style.display='block';}
+    else{
+      idle.style.display='none';ticker.style.display='';
+      const h=ready.map(o=>`<span class="titem">🎉 Order <span class="tbadge">${SY.esc(o.num)}</span> — ${SY.esc(o.name)}, collect now!</span>`).join('<span style="color:rgba(255,255,255,.2);margin:0 20px">|</span>');
+      ticker.innerHTML=h+'<span style="margin:0 40px"></span>'+h;
+    }
+    if(currentOrder){const mine=ready.find(o=>o.num===currentOrder.num);if(mine&&!document.getElementById('celScreen').classList.contains('open'))showCelebration(mine);}
+  }catch(e){}
+}
+// ── CELEBRATION
+function showCelebration(o){document.getElementById('celNum').textContent=SY.esc(o.num);document.getElementById('celScreen').classList.add('open');spawnConfetti();document.body.style.overflow='hidden';}
+function dismissCel(){document.getElementById('celScreen').classList.remove('open');document.body.style.overflow='';currentOrder=null;}
+function spawnConfetti(){const l=document.getElementById('confetti');l.innerHTML='';const cols=['#8DC63F','#E8A020','#C45C2A','#1E3A0F','#fff','#4A7A28'];for(let i=0;i<80;i++){const el=document.createElement('div');el.className='celp';el.style.cssText=`left:${Math.random()*100}%;background:${cols[~~(Math.random()*cols.length)]};width:${5+Math.random()*8}px;height:${8+Math.random()*12}px;border-radius:${Math.random()>.5?'50%':'2px'};animation:cfall ${2+Math.random()*3}s linear ${Math.random()*2}s forwards;transform:rotate(${Math.random()*360}deg)`;l.appendChild(el);}}
+// ── TOAST
+let toastTimer;
+function showToast(ic,msg){const t=document.getElementById('toast');document.getElementById('toastIcon').textContent=ic;document.getElementById('toastMsg').textContent=' '+msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);}
+// ── NAV
+function goTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});}
+function openMN(){document.getElementById('mnav').classList.add('open');document.body.style.overflow='hidden';}
+function closeMN(){document.getElementById('mnav').classList.remove('open');document.body.style.overflow='';}
+function initScrollNav(){const ids=['menu','why','how','about'];const btns=document.querySelectorAll('.nb');ids.forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){btns.forEach(b=>b.classList.remove('on'));if(btns[i])btns[i].classList.add('on');}});},{rootMargin:'-40% 0px -40% 0px'}).observe(el);});}
+// ── EDIT MODE
+function handleEditFab(){if(editMode)exitEdit();else{document.getElementById('ownerModal').classList.add('open');setTimeout(()=>document.getElementById('ownerPass').focus(),300);}}
+function ownerUnlock(){
+  const pass=localStorage.getItem('sy_admin_pass')||SY.DS.adminPass||'sy2025';
+  if(document.getElementById('ownerPass').value===pass){
+    closeOwnerModal();document.getElementById('ownerPass').value='';
+    editMode=true;document.getElementById('editFab').classList.add('act');
+    document.getElementById('editFab').textContent='✕ Exit Edit';
+    document.getElementById('editBanner').classList.add('show');
+    renderProducts(activeFilter);showToast('✏️','Edit mode ON — tap product image to upload');
+  }else{
+    document.getElementById('ownerErr').textContent='❌ Wrong password';
+    document.getElementById('ownerPass').value='';
+    setTimeout(()=>document.getElementById('ownerErr').textContent='',2500);
+  }
+}
+function closeOwnerModal(){document.getElementById('ownerModal').classList.remove('open');}
+function exitEdit(){editMode=false;document.getElementById('editFab').classList.remove('act');document.getElementById('editFab').textContent='✏️ Edit Images';document.getElementById('editBanner').classList.remove('show');renderProducts(activeFilter);}
+function triggerUpload(id){
+  if(!editMode)return;
+  pendUploadId=id;
+  const fi=document.getElementById('fileInput');fi.value='';fi.onchange=null;
+  fi.onchange=async e=>{
+    const file=e.target.files[0];if(!file)return;
+    if(file.size>4*1024*1024){showToast('⚠️','Max 4MB');return;}
+    // Check if Google Drive is configured
+    const settings=await SY.getSettings().catch(()=>({}));
+    const driveClientId=settings.driveClientId;
+    if(driveClientId){
+      showToast('📤','Uploading to Google Drive…');
+      try{
+        const token=await SY.DRIVE.getAccessToken(driveClientId);
+        const driveId=await SY.DRIVE.uploadImage(file,`seitanyum_product_${id}_${Date.now()}`,token);
+        // Update product with driveId
+        const prods=await SY.getProducts();
+        const i=prods.findIndex(p=>p.id===id);
+        if(i!==-1){prods[i].driveId=driveId;await SY.saveProducts(prods);PRODUCTS=prods;}
+        renderProducts(activeFilter);renderShowcase();renderIMBody();
+        showToast('✅','Image saved to Google Drive!');
+      }catch(err){
+        showToast('⚠️','Drive upload failed — saving locally');
+        const r=new FileReader();r.onload=ev=>{if(saveLocalImg(id,ev.target.result)){renderProducts(activeFilter);renderShowcase();renderIMBody();showToast('✅','Image saved locally');}};r.readAsDataURL(file);
+      }
+    }else{
+      const r=new FileReader();r.onload=ev=>{if(saveLocalImg(pendUploadId,ev.target.result)){renderProducts(activeFilter);renderShowcase();renderIMBody();showToast('✅','Image saved!');}};r.readAsDataURL(file);
+    }
+  };
+  fi.click();
+}
+function removeImg(id){removeLocalImg(id);renderProducts(activeFilter);renderShowcase();renderIMBody();showToast('🗑','Image removed');}
+function clearAllImgs(){PRODUCTS.forEach(p=>removeLocalImg(p.id));renderProducts(activeFilter);renderShowcase();renderIMBody();showToast('🗑','All local images cleared');}
+function openIM(){renderIMBody();document.getElementById('imov').classList.add('open');document.getElementById('impanel').classList.add('open');document.body.style.overflow='hidden';}
+function closeIM(){document.getElementById('imov').classList.remove('open');document.getElementById('impanel').classList.remove('open');document.body.style.overflow='';}
+function renderIMBody(){
+  document.getElementById('impBody').innerHTML=PRODUCTS.map(p=>{
+    const img=getProductImg(p);
+    const src=img?`<img src="${img}" alt="${SY.esc(p.name)}" />`:`<span>${SY.esc(p.emoji)}</span>`;
+    const hasDrive=!!p.driveId;
+    return`<div class="imrow"><div class="imthumb">${src}</div><div class="iminfo"><div class="imin">${SY.esc(p.name)}</div><div class="imis">${img?(hasDrive?`<span class="has">✓ Google Drive</span>`:`<span class="has">✓ Local</span>`):'No photo yet'}</div><div class="imbtns"><button class="imub" onclick="triggerUpload(${p.id})">📷 ${img?'Replace':'Upload'}</button>${img?`<button class="imrb" onclick="removeImg(${p.id})">✕</button>`:''}</div></div></div>`;
+  }).join('');
+}
+// ── ESC KEY
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeCart();closeOrderModal();closeOwnerModal();closeIM();closeMN();}});
+init();
+</script>
+</body>
+</html>
