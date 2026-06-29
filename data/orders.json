@@ -53,7 +53,7 @@
       {
         "id": 7,
         "name": "Zobo",
-        "emoji": "Ã°ÂÂÂ½Ã¯Â¸Â",
+        "emoji": "Ã°ÂÂÂ½",
         "qty": 1,
         "price": 500,
         "unit": "1"
@@ -63,5 +63,32 @@
     "ts": 1782757632908,
     "createdAt": "2026-06-29T18:27:12.908Z",
     "updatedAt": "2026-06-29T18:30:13.510Z"
+  },
+  {
+    "num": "SY5036",
+    "name": "uncle",
+    "status": "pending",
+    "items": [
+      {
+        "id": 6,
+        "name": "Seitan Burger",
+        "emoji": "🍔",
+        "qty": 1,
+        "price": 2600,
+        "unit": "each"
+      },
+      {
+        "id": 7,
+        "name": "Zobo",
+        "emoji": "🍽️",
+        "qty": 1,
+        "price": 500,
+        "unit": "1"
+      }
+    ],
+    "total": 3100,
+    "ts": 1782757924465,
+    "createdAt": "2026-06-29T18:32:04.465Z",
+    "updatedAt": null
   }
 ]
