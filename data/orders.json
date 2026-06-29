@@ -36,5 +36,32 @@
     "ts": 1782756761222,
     "createdAt": "2026-06-29T18:12:41.222Z",
     "updatedAt": "2026-06-29T18:12:46.017Z"
+  },
+  {
+    "num": "SY4599",
+    "name": "uncle",
+    "status": "pending",
+    "items": [
+      {
+        "id": 4,
+        "name": "Seitan Stew Pack",
+        "emoji": "🥘",
+        "qty": 1,
+        "price": 5500,
+        "unit": "family pack"
+      },
+      {
+        "id": 7,
+        "name": "Zobo",
+        "emoji": "🍽️",
+        "qty": 1,
+        "price": 500,
+        "unit": "1"
+      }
+    ],
+    "total": 6000,
+    "ts": 1782757632908,
+    "createdAt": "2026-06-29T18:27:12.908Z",
+    "updatedAt": null
   }
 ]
