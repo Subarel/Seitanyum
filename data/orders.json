@@ -90,5 +90,24 @@
     "ts": 1782757924465,
     "createdAt": "2026-06-29T18:32:04.465Z",
     "updatedAt": "2026-06-29T18:45:31.020Z"
+  },
+  {
+    "num": "SY3136",
+    "name": "Subarel",
+    "status": "pending",
+    "items": [
+      {
+        "id": 4,
+        "name": "Seitan Stew Pack",
+        "emoji": "🥘",
+        "qty": 1,
+        "price": 5500,
+        "unit": "family pack"
+      }
+    ],
+    "total": 5500,
+    "ts": 1782763657591,
+    "createdAt": "2026-06-29T20:07:37.591Z",
+    "updatedAt": null
   }
 ]
