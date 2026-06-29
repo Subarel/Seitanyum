@@ -67,7 +67,7 @@
   {
     "num": "SY5036",
     "name": "uncle",
-    "status": "paid",
+    "status": "accepted",
     "items": [
       {
         "id": 6,
@@ -89,6 +89,6 @@
     "total": 3100,
     "ts": 1782757924465,
     "createdAt": "2026-06-29T18:32:04.465Z",
-    "updatedAt": "2026-06-29T18:32:10.351Z"
+    "updatedAt": "2026-06-29T18:45:18.893Z"
   }
 ]
