@@ -1,24 +1,5 @@
 [
   {
-    "num": "SY9548",
-    "name": "Subarel",
-    "status": "cancelled",
-    "items": [
-      {
-        "id": 3,
-        "name": "Protein Bowl",
-        "emoji": "Ã°ÂÂÂ±",
-        "qty": 1,
-        "price": 3200,
-        "unit": "per bowl"
-      }
-    ],
-    "total": 3200,
-    "ts": 1782756590320,
-    "createdAt": "2026-06-29T18:09:50.320Z",
-    "updatedAt": "2026-06-29T20:11:20.804Z"
-  },
-  {
     "num": "SY4599",
     "name": "uncle",
     "status": "ready",
