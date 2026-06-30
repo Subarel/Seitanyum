@@ -558,7 +558,7 @@ async function doOrder(num,newStatus){
   setSB('ld');
   try{await SY.updateStatus(num,newStatus);setSB('ok');}catch(e){setSB('er');}
   await loadAll();
-  if(newStatus==='ready')showBell('🎉 Order Ready!',`Order ${num} marked ready — customer is being notified on their screen.`);
+ 
   if(newStatus==='accepted')showBell('✅ Accepted',`Order ${num} is now being prepared.`);
 }
 function askCancel(num){pendingAction=()=>doOrder(num,'cancelled');openConfirm('⚠️','Cancel Order?',`Order ${num} will be cancelled.`,'Cancel',false);}
