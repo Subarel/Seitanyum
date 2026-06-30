@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "num": "SY3295",
+    "name": "Subarel",
+    "status": "pending",
+    "items": [
+      {
+        "id": 1,
+        "name": "Classic Seitan Strips",
+        "emoji": "🍗",
+        "qty": 1,
+        "price": 2800,
+        "unit": "per pack"
+      }
+    ],
+    "total": 2800,
+    "ts": 1782851213724,
+    "createdAt": "2026-06-30T20:26:53.724Z",
+    "updatedAt": null
+  }
+]
