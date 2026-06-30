@@ -1,21 +1,21 @@
 [
   {
-    "num": "SY3295",
+    "num": "SY1405",
     "name": "Subarel",
-    "status": "paid",
+    "status": "pending",
     "items": [
       {
-        "id": 1,
-        "name": "Classic Seitan Strips",
-        "emoji": "🍗",
-        "qty": 1,
-        "price": 2800,
-        "unit": "per pack"
+        "id": 4,
+        "name": "Seitan Stew Pack",
+        "emoji": "🥘",
+        "qty": 2,
+        "price": 5500,
+        "unit": "family pack"
       }
     ],
-    "total": 2800,
-    "ts": 1782851213724,
-    "createdAt": "2026-06-30T20:26:53.724Z",
-    "updatedAt": "2026-06-30T20:26:59.917Z"
+    "total": 11000,
+    "ts": 1782851341803,
+    "createdAt": "2026-06-30T20:29:01.803Z",
+    "updatedAt": null
   }
 ]
